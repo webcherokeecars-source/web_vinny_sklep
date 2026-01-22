@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinařství Hušek | Tradice & Archiv</title>
+    <meta name="description"
+        content="Objevte kouzlo moravského vinného sklepa. Degustace, prodej archivních vín a rodinná atmosféra ve Velkých Bílovicích.">
+    <meta name="keywords" content="víno, vinařství, sklep, Velké Bílovice, degustace, archivní víno, Morava">
+    <meta name="author" content="Vinařství Hušek">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.vinarstvihusek.cz/">
+    <meta property="og:title" content="Vinařství Hušek | Tradice & Archiv">
+    <meta property="og:description"
+        content="Objevte kouzlo moravského vinného sklepa. Degustace, prodej archivních vín a rodinná atmosféra.">
+    <meta property="og:image"
+        content="https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=1200">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.vinarstvihusek.cz/">
+    <meta property="twitter:title" content="Vinařství Hušek | Tradice & Archiv">
+    <meta property="twitter:description"
+        content="Objevte kouzlo moravského vinného sklepa. Degustace, prodej archivních vín a rodinná atmosféra.">
+    <meta property="twitter:image"
+        content="https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=1200">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Winery",
+      "name": "Vinařství Hušek",
+      "image": "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=1200",
+      "url": "https://www.vinarstvihusek.cz/",
+      "telephone": "+420123456789",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Vinná ulička 12",
+        "addressLocality": "Velké Bílovice",
+        "postalCode": "69102",
+        "addressCountry": "CZ"
+      },
+      "priceRange": "$$",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    }
+    </script>
+
+    <!-- Favicon (SVG) -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍷</text></svg>">
+
+    <!-- Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/bottle.css">
+    <link rel="stylesheet" href="assets/css/decorations.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+
+    <noscript>
+        <style>
+            #preloader {
+                display: none !important;
+            }
+
+            body {
+                overflow: visible !important;
+            }
+        </style>
+    </noscript>
+</head>
+
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <span class="loader-text">Vinařství Hušek</span>
+            <div class="loader-line"></div>
+        </div>
+    </div>
+
+    <!-- Atmospheric Structural Elements -->
+    <div class="cellar-arch"></div>
+    <div class="cellar-vignette"></div>
+    <div class="cellar-floor"></div>
+
+    <!-- Background Wine Bottle (Centered, Low Opacity) -->
+    <div class="bottle-container">
+        <div class="bottle-wrapper">
+            <div class="bottle-cork"></div>
+            <div class="bottle-mask">
+                <div class="bottle-glass"></div>
+                <div class="wine-liquid" id="wine-liquid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="logo">HUŠEK</div>
+        <ul class="nav-links">
+            <li><a href="#intro">Domů</a></li>
+            <li><a href="#gallery">Galerie</a></li>
+            <li><a href="#offer">Vína</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+        </ul>
+        <button class="mobile-menu-btn" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main>
+
+        <!-- Hero Section -->
+        <section id="intro" class="section hero-section">
+            <div class="container text-center">
+                <div class="reveal">
+                    <span class="section-subtitle">Založeno s úctou k půdě</span>
+                    <h1 class="hero-title">Duch archivu</h1>
+                    <p class="hero-subtitle">Kde čas dozrává v každé kapce.</p>
+                </div>
+                <div class="mt-4 reveal reveal-delay-2">
+                    <a href="#gallery" class="btn-primary">Vstoupit do sklepa</a>
+                </div>
+            </div>
+
+            <!-- Symmetric Sconces - Left -->
+            <div class="sconce-decoration" style="top: 45%; left: 15%;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+
+            <!-- Symmetric Sconces - Right -->
+            <div class="sconce-decoration" style="top: 45%; right: 15%;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="section">
+            <div class="container">
+                <div class="reveal text-center">
+                    <span class="section-subtitle">Atmosféra sklepa</span>
+                    <h2 class="section-title">Kde víno zraje</h2>
+                </div>
+
+                <div class="gallery-carousel mt-4 reveal">
+                    <div class="gallery-slides">
+                        <div class="gallery-slide active">
+                            <img src="https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=1400"
+                                alt="Vinný sklep">
+                        </div>
+                        <div class="gallery-slide">
+                            <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=1400"
+                                alt="Lahve vína">
+                        </div>
+                        <div class="gallery-slide">
+                            <img src="https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=1400"
+                                alt="Sudy ve sklepě">
+                        </div>
+                        <div class="gallery-slide">
+                            <img src="https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&q=80&w=1400"
+                                alt="Detail hroznu">
+                        </div>
+                    </div>
+
+                    <div class="gallery-nav">
+                        <div class="nav-btn nav-prev">&#8249;</div>
+                        <div class="nav-btn nav-next">&#8250;</div>
+                    </div>
+
+                    <div class="gallery-dots">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sconce -->
+            <div class="sconce-decoration" style="top: 50%; left: 2%; opacity: 0.4;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <!-- Sconce -->
+            <div class="sconce-decoration" style="bottom: 20%; right: 3%; opacity: 0.4;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="about-text reveal text-center">
+                    <span class="section-subtitle">Náš příběh</span>
+                    <h2 class="section-title">Rodinné dědictví</h2>
+                    <p>V našem sklepě se čas zastavil. Mezi kamennými zdmi, kde vládne ticho a stálá teplota, dozrávají
+                        vína, která si pamatují slunce uplynulých let.</p>
+                    <p>Úcta k přírodě a trpělivost jsou naše největší hodnoty. Každý hrozen nese otisk moravského
+                        terroir.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cellar Section -->
+        <section id="offer" class="section">
+            <div class="container">
+                <div class="reveal text-center">
+                    <span class="section-subtitle">Prostor k pronájmu</span>
+                    <h2 class="section-title">Náš sklep</h2>
+                </div>
+
+                <div class="cards-grid mt-4">
+                    <div class="card reveal">
+                        <div class="card-icon">🛢️</div>
+                        <h3>Kapacita</h3>
+                        <p>Prostorný sklep pojme až 40 osob. Ideální pro rodinné oslavy, firemní akce či degustace s
+                            přáteli.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="card-icon">🥂</div>
+                        <h3>Degustace</h3>
+                        <p>Nabízíme řízené degustace moravských vín s odborným výkladem. Zážitek pro všechny smysly.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="card-icon">🕯️</div>
+                        <h3>Akce na míru</h3>
+                        <p>Svatby, narozeniny, teambuildingy. Připravíme vše podle vašich představ v autentickém
+                            prostředí.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sconce -->
+            <div class="sconce-decoration" style="top: 30%; left: 3%; opacity: 0.4;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <!-- Sconce -->
+            <div class="sconce-decoration" style="top: 45%; right: 2%; opacity: 0.4;">
+                <div class="sconce-glow"></div>
+                <div class="sconce">
+                    <div class="sconce-flame"></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="contact-layout">
+                    <div class="reveal">
+                        <span class="section-subtitle">Kontakt</span>
+                        <h2 class="section-title">Zastavte se</h2>
+
+                        <div class="contact-info">
+                            <div class="info-item">
+                                <span class="info-label">Adresa</span>
+                                <p>Adresa, Město</p>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Telefon</span>
+                                <p><a href="tel:+420123456789">+420 123 456 789</a></p>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email</span>
+                                <p><a href="mailto:email@example.com">email@example.com</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal">
+                        <form class="contact-form" action="https://formsubmit.co/email@example.com" method="POST">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="_subject" value="Nová zpráva z webu Vinařství Hušek">
+                            <input type="hidden" name="_next" value="https://vinarstvihusek.cz/dekujeme.html">
+                            <!-- Placeholder -->
+
+                            <input type="text" name="name" placeholder="Vaše jméno" required>
+                            <input type="email" name="email" placeholder="Váš email" required>
+                            <textarea name="message" placeholder="Vaše zpráva..." rows="5" required></textarea>
+                            <button type="submit" class="btn-primary">Odeslat zprávu</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">LOGOTYP</div>
+                    <p class="footer-desc">Krátký popis vinařství<br>Adresa, Město</p>
+                </div>
+
+                <div class="footer-social">
+                    <!-- Icons only, as requested -->
+                    <div class="social-icons">
+                        <span class="social-icon" title="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </span>
+                        <span class="social-icon" title="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="footer-map" id="google-map-container">
+                    <div class="map-placeholder">
+                        <p>Pro zobrazení mapy povolte marketingové cookies.</p>
+                        <button class="btn-primary btn-small" id="consent-map-btn">Povolit mapu</button>
+                    </div>
+                    <iframe id="google-map-iframe"
+                        data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21015.68882416973!2d16.8837336!3d48.8475949!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47134bec9e761f03%3A0x400af0f6615b3e0!2sVelk%C3%A9%20B%C3%ADlovice!5e0!3m2!1scs!2scz!4v1700667000000!5m2!1scs!2scz"
+                        width="100%" height="200"
+                        style="border:0; border-radius: 4px; filter: grayscale(1) invert(0.9) contrast(0.8);"
+                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 VINAŘSTVÍ HUŠEK | Architektura moravské tradice</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dedicated Mobile Menu Overlay (Outside Main Nav to avoid z-index/transform issues) -->
+    <div class="mobile-menu-overlay">
+        <ul class="mobile-nav-links">
+            <li><a href="#intro">Domů</a></li>
+            <li><a href="#gallery">Galerie</a></li>
+            <li><a href="#offer">Vína</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+        </ul>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+/* === ANIMATIONS & REVEALS === */
+
+/* Scroll Reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.reveal-delay-1 {
+    transition-delay: 0.1s;
+}
+
+.reveal-delay-2 {
+    transition-delay: 0.2s;
+}
+
+.reveal-delay-3 {
+    transition-delay: 0.3s;
+}
+
+
+
+/* Reveal Parent Stagger */
+.stagger-parent .reveal {
+    transition-delay: calc(0.1s * var(--delay));
+}
+
+/* Mouse Glow Effect */
+.mouse-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.035) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+body:hover .mouse-glow {
+    opacity: 1;
+}
