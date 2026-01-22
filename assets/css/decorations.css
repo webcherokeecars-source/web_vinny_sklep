@@ -178,8 +178,24 @@
 
 @media (max-width: 968px) {
 
-    .sconce-decoration,
+    /* Hide floor, keep sconces */
     .cellar-floor {
         display: none;
+    }
+
+    .sconce-decoration {
+        display: block !important;
+        transform: scale(0.6);
+        opacity: 0.3 !important;
+    }
+
+    .sconce-left {
+        left: -15px !important;
+        right: auto !important;
+    }
+
+    .sconce-right {
+        right: -15px !important;
+        left: auto !important;
     }
 }

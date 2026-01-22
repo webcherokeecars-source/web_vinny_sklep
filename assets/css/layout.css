@@ -241,14 +241,7 @@
         overflow: hidden;
     }
 
-    /* Bottle visibility tweak in layout */
-    .bottle-container {
-        z-index: 1 !important;
-        opacity: 0.25 !important;
-        display: block !important;
-        top: 60% !important;
-        /* Force position down */
-    }
+    /* Bottle visibility tweak removed to allow bottle.css to control positioning */
 
     .gallery-carousel {
         height: 400px;
@@ -503,6 +496,13 @@
     }
 
     .cookie-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .cookie-buttons .btn-secondary,
+    .cookie-buttons .btn-primary {
+        width: 100%;
         justify-content: center;
     }
 }

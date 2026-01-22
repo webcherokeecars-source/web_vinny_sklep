@@ -107,37 +107,40 @@
 }
 
 /* Responsive */
-@media (max-width: 1400px) {
-    .bottle-container {
-        width: 380px;
-        opacity: 0.1;
-    }
-}
-
-@media (max-width: 1200px) {
-    .bottle-container {
-        width: 320px;
-        opacity: 0.12;
-    }
-}
-
 @media (max-width: 968px) {
     .bottle-container {
         display: block;
-        width: 250px;
-        opacity: 0.25;
+        width: 300px;
+        opacity: 0.2;
         filter: none;
         z-index: 1;
-        top: 60%;
-        /* Shifted further down from 55% */
+        top: 120px;
+        /* Increased from 90px to prevent nav overlap on scroll */
+        left: 50%;
+        transform: translateX(-50%);
+        /* Horizontal center only, no vertical */
+        pointer-events: none;
+        height: auto;
+    }
+
+    .bottle-wrapper {
+        transform: scale(0.6);
+        transform-origin: top center;
+        /* Scale from the cork down */
+        width: 100%;
+        position: static;
     }
 }
 
 @media (max-width: 480px) {
     .bottle-container {
-        width: 200px;
-        opacity: 0.22;
-        top: 65%;
-        /* Even lower on small screens */
+        top: 110px;
+        /* Slightly higher for mobile nav height but still cleared */
+        opacity: 0.18;
+    }
+
+    .bottle-wrapper {
+        transform: scale(0.5);
+        /* Scale slightly larger than before to fill space nicely */
     }
 }

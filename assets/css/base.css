@@ -60,6 +60,14 @@ body {
     background-attachment: fixed;
 }
 
+/* Optimization for Mobile Scrolling */
+@media (max-width: 968px) {
+    body {
+        background-attachment: scroll;
+        /* Prevents lag/jitter on mobile */
+    }
+}
+
 h1,
 h2,
 h3,

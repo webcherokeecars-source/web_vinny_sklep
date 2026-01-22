@@ -32,37 +32,40 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /* --- Mouse Interaction (Flashlight & Cards) --- */
-    const glow = document.createElement('div');
-    glow.className = 'mouse-glow';
-    document.body.appendChild(glow);
+    // Optimization: Only enable on desktop to save resources on mobile
+    if (window.innerWidth > 968) {
+        const glow = document.createElement('div');
+        glow.className = 'mouse-glow';
+        document.body.appendChild(glow);
 
-    let curX = 0, curY = 0;
-    let glowX = 0, glowY = 0;
+        let curX = 0, curY = 0;
+        let glowX = 0, glowY = 0;
 
-    window.addEventListener('mousemove', (e) => {
-        curX = e.clientX;
-        curY = e.clientY;
+        window.addEventListener('mousemove', (e) => {
+            curX = e.clientX;
+            curY = e.clientY;
 
-        // Local mouse position for cards
-        cards.forEach(card => {
-            const rect = card.getBoundingClientRect();
-            if (e.clientX > rect.left && e.clientX < rect.right && e.clientY > rect.top && e.clientY < rect.bottom) {
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                card.style.setProperty('--mouse-x', `${x}%`);
-                card.style.setProperty('--mouse-y', `${y}%`);
-            }
+            // Local mouse position for cards
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (e.clientX > rect.left && e.clientX < rect.right && e.clientY > rect.top && e.clientY < rect.bottom) {
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    card.style.setProperty('--mouse-x', `${x}%`);
+                    card.style.setProperty('--mouse-y', `${y}%`);
+                }
+            });
         });
-    });
 
-    const animateGlow = () => {
-        glowX += (curX - glowX) * 0.08;
-        glowY += (curY - glowY) * 0.08;
-        glow.style.left = `${glowX}px`;
-        glow.style.top = `${glowY}px`;
-        requestAnimationFrame(animateGlow);
-    };
-    animateGlow();
+        const animateGlow = () => {
+            glowX += (curX - glowX) * 0.08;
+            glowY += (curY - glowY) * 0.08;
+            glow.style.left = `${glowX}px`;
+            glow.style.top = `${glowY}px`;
+            requestAnimationFrame(animateGlow);
+        };
+        animateGlow();
+    }
 
     /* --- Scroll Reveal Observer --- */
     const revealObserver = new IntersectionObserver((entries) => {
