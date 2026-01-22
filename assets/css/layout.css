@@ -1,4 +1,11 @@
 /* === LAYOUT & SECTIONS === */
+main {
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    /* Correction for mobile horizontal scroll */
+}
+
 .section {
     position: relative;
     padding: 5rem var(--safe-area);
