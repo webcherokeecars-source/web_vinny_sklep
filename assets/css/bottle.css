@@ -5,14 +5,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 450px;
+    width: 220px;
+    /* Reduced width further (was 260px) */
     height: auto;
     z-index: 0;
-    /* Behind everything */
     pointer-events: none;
     opacity: 0.15;
-    /* Increased visibility for desktop */
-    filter: blur(1px);
+    filter: blur(0.5px);
 }
 
 .bottle-wrapper {
@@ -23,35 +22,62 @@
     align-items: center;
 }
 
-/* Glass Bottle Shape - Large background version */
+/* Glass Bottle Shape - Refined Silhouette (Narrower: 220px) */
 .bottle-mask {
     position: relative;
     width: 220px;
-    height: 850px;
+    /* Narrower body */
+    height: 760px;
+    /* Slightly shorter to maintain ratio */
     background: linear-gradient(90deg,
-            rgba(15, 20, 15, 0.95) 0%,
-            rgba(30, 50, 35, 0.6) 25%,
-            rgba(45, 75, 50, 0.4) 50%,
-            rgba(25, 45, 30, 0.7) 100%);
-    border-radius: 12px 12px 50px 50px;
-    clip-path: path('M 55 0 L 165 0 L 165 170 Q 172 190 190 210 Q 215 235 220 275 L 220 810 Q 220 850 175 850 L 45 850 Q 0 850 0 810 L 0 275 Q 5 235 30 210 Q 48 190 55 170 Z');
+            rgba(20, 30, 20, 0.96) 0%,
+            rgba(40, 60, 45, 0.7) 30%,
+            rgba(30, 50, 40, 0.8) 50%,
+            rgba(20, 35, 25, 0.9) 80%,
+            rgba(10, 20, 15, 0.95) 100%);
+    border-radius: 0 0 30px 30px;
+    /* Path Recalculation for 220px width (Center 110)
+       Lip: 75-145 (70px wide).
+       Neck: 78-142 (64px wide). Start Y: 25. End Y: 85.
+       Shoulder: Curve to 175.
+       Body Width: 220.
+    */
+    clip-path: path('M 75 0 L 145 0 L 145 15 L 142 25 L 142 85 Q 142 145 220 175 L 220 720 Q 220 760 175 760 L 45 760 Q 0 760 0 720 L 0 175 Q 78 145 78 85 L 78 25 L 75 15 Z');
     overflow: hidden;
+    z-index: 2;
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8);
 }
 
 /* Glass Reflection */
 .bottle-glass {
     position: absolute;
-    top: 15%;
-    left: 10%;
-    width: 18px;
-    height: 55%;
+    top: 5%;
+    left: 12%;
+    width: 8px;
+    height: 90%;
     background: linear-gradient(to bottom,
-            transparent,
-            rgba(255, 255, 255, 0.15) 20%,
-            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.3) 20%,
+            rgba(255, 255, 255, 0.1) 60%,
             transparent);
-    border-radius: 20px;
+    filter: blur(2px);
     z-index: 10;
+    border-radius: 10px;
+}
+
+.bottle-glass::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 20px;
+    width: 3px;
+    height: 85%;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.02),
+            rgba(255, 255, 255, 0.15) 25%,
+            transparent);
+    filter: blur(1px);
+    border-radius: 10px;
 }
 
 /* Wine Liquid */
@@ -60,45 +86,48 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 85%;
+    height: 75%;
     background: linear-gradient(to right,
-            #3a0910 0%,
-            #7a1a27 30%,
-            #9c2838 50%,
-            #7a1a27 70%,
-            #3a0910 100%);
-    box-shadow: inset 0 50px 60px rgba(0, 0, 0, 0.5);
+            #2a0505 0%,
+            #5e0d1b 30%,
+            #7a1525 50%,
+            #5e0d1b 70%,
+            #2a0505 100%);
+    box-shadow: inset 0 50px 80px rgba(0, 0, 0, 0.6);
     transition: height 0.15s ease-out;
 }
 
+/* Liquid Surface */
 .wine-liquid::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 18px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 35px rgba(161, 53, 68, 0.4);
-    filter: blur(2px);
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(189, 43, 63, 0.3);
+    filter: blur(1px);
 }
 
-/* Cork */
+/* Cork - Matches new neck width */
 .bottle-cork {
-    width: 45px;
-    height: 55px;
+    width: 48px;
+    /* Approx neck inner width */
+    height: 60px;
     background:
-        radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.06) 1.5px, transparent 1.5px),
-        linear-gradient(90deg, #9a8570, #c0a890, #9a8570);
-    background-size: 6px 8px, 10px 12px, 100% 100%;
-    border-radius: 6px 6px 0 0;
-    margin-bottom: -3px;
+        radial-gradient(circle at 40% 30%, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 80% 60%, rgba(0, 0, 0, 0.08) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, #8b7355, #d2b48c, #8b7355);
+    background-size: 5px 5px, 12px 12px, 100% 100%;
+    border-radius: 3px;
+    margin-bottom: -52px;
+    /* Deep insertion */
     position: relative;
-    z-index: 5;
+    z-index: 1;
     box-shadow:
-        inset 0 -8px 15px rgba(0, 0, 0, 0.25),
-        inset 2px 0 5px rgba(255, 255, 255, 0.1);
+        inset 0 -5px 10px rgba(0, 0, 0, 0.3),
+        0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Label - Hidden in background mode */
@@ -110,23 +139,24 @@
 @media (max-width: 968px) {
     .bottle-container {
         display: block;
-        width: 300px;
-        opacity: 0.2;
+        width: 220px;
+        opacity: 0.18;
         filter: none;
         z-index: 1;
-        top: 120px;
-        /* Increased from 90px to prevent nav overlap on scroll */
+        top: 50%;
+        /* Centered Vertically */
         left: 50%;
-        transform: translateX(-50%);
-        /* Horizontal center only, no vertical */
+        transform: translate(-50%, -50%);
+        /* Centered in Viewport */
         pointer-events: none;
         height: auto;
     }
 
     .bottle-wrapper {
-        transform: scale(0.6);
-        transform-origin: top center;
-        /* Scale from the cork down */
+        transform: scale(0.85);
+        /* Increased from 0.65 */
+        transform-origin: center center;
+        /* Center scaling to keep it centered */
         width: 100%;
         position: static;
     }
@@ -134,13 +164,11 @@
 
 @media (max-width: 480px) {
     .bottle-container {
-        top: 110px;
-        /* Slightly higher for mobile nav height but still cleared */
-        opacity: 0.18;
+        opacity: 0.15;
     }
 
     .bottle-wrapper {
-        transform: scale(0.5);
-        /* Scale slightly larger than before to fill space nicely */
+        transform: scale(0.8);
+        /* Increased from 0.6 */
     }
 }
