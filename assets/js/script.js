@@ -1,9 +1,9 @@
 /**
- * HUŠEK Wine Cellar - Main Scripts
+ * Sklep Drnholec - Main Scripts
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Hušek scripts initialized");
+    console.log("Sklep Drnholec scripts initialized");
 
     const liquid = document.getElementById('wine-liquid');
     const nav = document.querySelector('.main-nav');
@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- Gallery Logic --- */
     const slides = document.querySelectorAll('.gallery-slide');
     const dots = document.querySelectorAll('.dot');
+    const thumbs = document.querySelectorAll('.gallery-thumb');
     const prevBtn = document.querySelector('.nav-prev');
     const nextBtn = document.querySelector('.nav-next');
     let currentSlide = 0;
@@ -89,9 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const showSlide = (index) => {
         if (!slides.length) return;
         slides.forEach(s => s.classList.remove('active'));
-        dots.forEach(d => d.classList.remove('active'));
         slides[index].classList.add('active');
-        dots[index].classList.add('active');
         currentSlide = index;
     };
 
@@ -113,13 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (slides.length > 0) {
         startSlider();
-        dots.forEach((dot, idx) => {
-            dot.addEventListener('click', () => {
-                showSlide(idx);
-                clearInterval(slideTimer);
-                startSlider();
-            });
-        });
         if (prevBtn) prevBtn.addEventListener('click', () => { prevSlideFunc(); clearInterval(slideTimer); startSlider(); });
         if (nextBtn) nextBtn.addEventListener('click', () => { nextSlideFunc(); clearInterval(slideTimer); startSlider(); });
 
@@ -154,6 +146,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 startSlider();
             }
         };
+
+        /* --- Lightbox --- */
+        const lightbox = document.getElementById('gallery-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxClose = document.querySelector('.lightbox-close');
+        const lightboxPrev = document.querySelector('.lightbox-prev');
+        const lightboxNext = document.querySelector('.lightbox-next');
+        const fullscreenBtn = document.querySelector('.gallery-fullscreen-btn');
+        let lightboxIndex = 0;
+
+        const galleryImages = Array.from(slides).map(s => s.querySelector('img')?.src).filter(Boolean);
+
+        const openLightbox = (index) => {
+            if (!lightbox || !galleryImages.length) return;
+            lightboxIndex = index;
+            lightboxImg.src = galleryImages[lightboxIndex];
+            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeLightbox = () => {
+            if (!lightbox) return;
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        const lightboxPrevFunc = () => {
+            lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+            lightboxImg.src = galleryImages[lightboxIndex];
+            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+        };
+
+        const lightboxNextFunc = () => {
+            lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
+            lightboxImg.src = galleryImages[lightboxIndex];
+            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+        };
+
+        if (fullscreenBtn) fullscreenBtn.addEventListener('click', () => openLightbox(currentSlide));
+        if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+        if (lightboxPrev) lightboxPrev.addEventListener('click', lightboxPrevFunc);
+        if (lightboxNext) lightboxNext.addEventListener('click', lightboxNextFunc);
+
+        // Click on slide image to open lightbox
+        slides.forEach((slide, idx) => {
+            slide.style.cursor = 'pointer';
+            slide.addEventListener('click', () => openLightbox(idx));
+        });
+
+        // Close on background click
+        if (lightbox) {
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox || !lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') lightboxPrevFunc();
+            if (e.key === 'ArrowRight') lightboxNextFunc();
+        });
     }
 
     /* --- Mobile Menu Toggle (Dedicated Overlay) --- */
@@ -222,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Optional: If you want to use AJAX instead of redirect
             // For now, we keep the direct form submit as configured for FormSubmit.co
             // but we can add validation or loading state here.
-            const btn = this.querySelector('.submit-btn');
+            const btn = this.querySelector('button[type="submit"]');
             if (btn) {
                 btn.textContent = 'Odesílání...';
                 btn.style.opacity = '0.7';
@@ -329,6 +386,175 @@ document.addEventListener('DOMContentLoaded', () => {
             loadGoogleMap();
             if (cookieBanner) cookieBanner.classList.remove('visible');
         });
+    }
+
+    /* --- Availability Calendar Navigator --- */
+    /* --- Custom Native Calendar Engine --- */
+    const calendarContainer = document.getElementById('customCalendarContainer');
+    const monthLabel = document.getElementById('calendarMonth');
+    const yearLabel = document.getElementById('calendarYear');
+    const calPrevBtn = document.getElementById('prevMonth');
+    const calNextBtn = document.getElementById('nextMonth');
+
+    if (calendarContainer) {
+        let calendarData = []; // Store parsed months
+        let currentIndex = 0;
+        const objectId = '1757';
+        const months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
+
+        const fetchCalendarData = async () => {
+            try {
+                // Switching to a more stable proxy and adding cache-busting
+                const targetUrl = `https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&legenda=ne&jednotky=ne&_t=${Date.now()}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Proxy response not ok');
+                const htmlString = await response.text();
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlString, 'text/html');
+                const tables = doc.querySelectorAll('table.month');
+
+                calendarData = Array.from(tables).map(table => {
+                    const name = table.querySelector('.month-name')?.textContent || '';
+                    const [monthName, year] = name.split(' ');
+
+                    const rows = Array.from(table.querySelectorAll('tr')).slice(2); // Skip header and day names
+                    const days = [];
+
+                    rows.forEach(row => {
+                        const cells = Array.from(row.querySelectorAll('td'));
+                        cells.forEach(cell => {
+                            const className = cell.className;
+                            const dayNum = cell.textContent.trim();
+                            let status = 'empty';
+
+                            // Logic to map e-chalupy classes to our custom ones
+                            if (className.includes('day-free')) status = 'free';
+                            if (className.includes('day-full')) status = 'full';
+
+                            // Special cases for arrival/departure (z/k classes)
+                            if (className.includes('day-full') && className.includes('z')) status = 'arrival';
+                            if (className.includes('day-full') && className.includes('k')) status = 'departure';
+
+                            // If it's a 'shdw' day (from prev/next month), treat as empty
+                            if (className.includes('day-shdw')) status = 'empty';
+
+                            days.push({ day: dayNum, status: status });
+                        });
+                    });
+
+                    return { month: monthName, year: year, days: days };
+                });
+
+                renderCalendar(0);
+            } catch (error) {
+                console.error("CALENDAR ERROR:", error);
+                calendarContainer.innerHTML = '<p class="error">Nepodařilo se načíst data kalendáře.</p>';
+            }
+        };
+
+        const renderCalendar = (index) => {
+            if (!calendarData[index]) return;
+            const data = calendarData[index];
+
+            // 1. Update Labels
+            if (monthLabel) monthLabel.textContent = data.month;
+            if (yearLabel) yearLabel.textContent = data.year;
+
+            // 2. Build Table
+            let html = `
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Po</th><th>Út</th><th>St</th><th>Čt</th><th>Pá</th><th>So</th><th>Ne</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            for (let i = 0; i < data.days.length; i += 7) {
+                html += '<tr>';
+                for (let j = 0; j < 7; j++) {
+                    const dayObj = data.days[i + j];
+                    if (!dayObj) continue; // Safety check
+
+                    const cellClass = `cal-${dayObj.status}`;
+                    // Only Free and Departure days are selectable for check-in
+                    const isSelectable = ['free', 'departure'].includes(dayObj.status) && dayObj.day;
+
+                    // Add click handler for selectable days
+                    let clickAttr = '';
+                    if (isSelectable) {
+                        const monthNum = months.indexOf(data.month) + 1;
+                        const formattedMonth = monthNum < 10 ? `0${monthNum}` : monthNum;
+                        const formattedDay = parseInt(dayObj.day) < 10 ? `0${dayObj.day}` : dayObj.day;
+                        const isoDate = `${data.year}-${formattedMonth}-${formattedDay}`;
+                        clickAttr = `onclick="selectCalendarDate('${isoDate}')" style="cursor: pointer"`;
+                    }
+
+                    html += `<td class="${cellClass}" ${clickAttr}>${dayObj.day}</td>`;
+                }
+                html += '</tr>';
+            }
+
+            html += '</tbody></table>';
+            calendarContainer.innerHTML = html;
+
+            // 3. Update Nav Buttons
+            if (calPrevBtn) {
+                calPrevBtn.style.opacity = index === 0 ? '0.2' : '1';
+                calPrevBtn.style.pointerEvents = index === 0 ? 'none' : 'auto';
+            }
+            if (calNextBtn) {
+                const isLimit = index >= 6; // User wants 6 months limit
+                calNextBtn.style.opacity = isLimit ? '0.2' : '1';
+                calNextBtn.style.pointerEvents = isLimit ? 'none' : 'auto';
+            }
+        };
+
+        // Global helper for the onclick attribute
+        window.selectCalendarDate = (dateString) => {
+            const checkinInput = document.getElementById('checkin');
+            const contactSection = document.getElementById('contact');
+
+            if (checkinInput) {
+                checkinInput.value = dateString;
+                // Add a small highlight effect to the input
+                checkinInput.style.backgroundColor = 'rgba(158, 122, 46, 0.1)';
+                setTimeout(() => {
+                    checkinInput.style.backgroundColor = 'transparent';
+                }, 1000);
+            }
+
+            if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+
+        if (calPrevBtn) {
+            calPrevBtn.onclick = (e) => {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderCalendar(currentIndex);
+                }
+            };
+        }
+
+        if (calNextBtn) {
+            calNextBtn.onclick = (e) => {
+                e.preventDefault();
+                if (currentIndex < 6) {
+                    currentIndex++;
+                    renderCalendar(currentIndex);
+                }
+            };
+        }
+
+        fetchCalendarData();
     }
 
     /* --- Initializers --- */

@@ -63,10 +63,10 @@ main {
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.1;
+    opacity: 0.04;
     background-image:
-        radial-gradient(ellipse at 50% -10%, transparent 40%, #000 70%),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.9) 100%);
+        radial-gradient(ellipse at 50% -10%, transparent 40%, rgba(60, 40, 20, 0.12) 70%),
+        linear-gradient(90deg, rgba(60, 40, 20, 0.04) 0%, transparent 25%, transparent 75%, rgba(60, 40, 20, 0.04) 100%);
 }
 
 .cellar-vignette {
@@ -74,7 +74,7 @@ main {
     inset: 0;
     pointer-events: none;
     z-index: 1001;
-    background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%);
+    background: radial-gradient(circle at center, transparent 50%, rgba(60, 40, 20, 0.04) 100%);
     mix-blend-mode: multiply;
 }
 
@@ -122,7 +122,7 @@ main {
 /* Tablet & Mobile */
 @media (max-width: 968px) {
     .main-nav {
-        background: linear-gradient(to bottom, rgba(13, 12, 11, 0.6) 0%, rgba(13, 12, 11, 0) 100%);
+        background: linear-gradient(to bottom, rgba(245, 239, 230, 0.7) 0%, rgba(245, 239, 230, 0) 100%);
         backdrop-filter: none;
         padding: 1.5rem 5%;
         z-index: 1500;
@@ -137,7 +137,7 @@ main {
     }
 
     .main-nav.scrolled {
-        background: rgba(13, 12, 11, 0.95);
+        background: rgba(245, 239, 230, 0.96);
         backdrop-filter: blur(15px);
     }
 
@@ -167,7 +167,7 @@ main {
         /* Full screen width */
         width: 100%;
         height: 100vh;
-        background: rgba(13, 12, 11, 0.92);
+        background: rgba(245, 239, 230, 0.97);
         /* Less opaque */
         backdrop-filter: blur(15px);
         /* Strong blur */
@@ -220,6 +220,14 @@ main {
 
     .mobile-menu-overlay.open .mobile-nav-links li:nth-child(4) {
         transition-delay: 0.4s;
+    }
+
+    .mobile-menu-overlay.open .mobile-nav-links li:nth-child(5) {
+        transition-delay: 0.5s;
+    }
+
+    .mobile-menu-overlay.open .mobile-nav-links li:nth-child(6) {
+        transition-delay: 0.6s;
     }
 
     .mobile-nav-links a {
@@ -293,9 +301,9 @@ main {
 
 /* === FOOTER === */
 .main-footer {
-    background: #080808;
+    background: #ebe3d6;
     padding: 5rem 0 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(60, 40, 20, 0.1);
     margin-top: 4rem;
 }
 
@@ -315,7 +323,7 @@ main {
 }
 
 .footer-brand .footer-desc {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(59, 46, 36, 0.6);
     line-height: 1.6;
 }
 
@@ -335,7 +343,7 @@ main {
     justify-content: center;
     width: 48px;
     height: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(60, 40, 20, 0.12);
     border-radius: 50%;
     color: var(--color-text);
     transition: all 0.3s ease;
@@ -346,7 +354,7 @@ main {
 .social-icon:hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
-    background: rgba(199, 161, 122, 0.1);
+    background: rgba(158, 122, 46, 0.08);
 }
 
 .footer-map iframe {
@@ -355,7 +363,7 @@ main {
     border-radius: 8px;
     opacity: 0.8;
     transition: opacity 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 20px rgba(60, 40, 20, 0.1);
 }
 
 .footer-map iframe:hover {
@@ -365,8 +373,8 @@ main {
 .footer-bottom {
     text-align: center;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.4);
+    border-top: 1px solid rgba(60, 40, 20, 0.08);
+    color: rgba(59, 46, 36, 0.5);
     font-size: 0.9rem;
 }
 
@@ -397,14 +405,14 @@ main {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(13, 12, 11, 0.95);
+    background: rgba(245, 239, 230, 0.97);
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--color-accent);
     padding: 2rem;
     z-index: 10000;
     transform: translateY(100%);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -10px 40px rgba(60, 40, 20, 0.08);
 }
 
 .cookie-banner.visible {
@@ -440,7 +448,7 @@ main {
 
 .btn-secondary {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(60, 40, 20, 0.15);
     color: var(--color-text);
     padding: 0.8rem 1.5rem;
     cursor: pointer;
@@ -453,13 +461,13 @@ main {
 
 .btn-secondary:hover {
     border-color: var(--color-text);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(60, 40, 20, 0.03);
 }
 
 /* Map Placeholder */
 .footer-map {
     position: relative;
-    background: #111;
+    background: #ddd4c5;
     border-radius: 4px;
     overflow: hidden;
 }
@@ -471,7 +479,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(20, 20, 20, 0.9);
+    background: rgba(235, 227, 214, 0.95);
     z-index: 5;
     text-align: center;
     padding: 1rem;

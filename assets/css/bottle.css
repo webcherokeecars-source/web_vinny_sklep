@@ -30,11 +30,11 @@
     height: 760px;
     /* Slightly shorter to maintain ratio */
     background: linear-gradient(90deg,
-            rgba(20, 30, 20, 0.96) 0%,
-            rgba(40, 60, 45, 0.7) 30%,
-            rgba(30, 50, 40, 0.8) 50%,
-            rgba(20, 35, 25, 0.9) 80%,
-            rgba(10, 20, 15, 0.95) 100%);
+            rgba(80, 100, 80, 0.35) 0%,
+            rgba(100, 130, 105, 0.25) 30%,
+            rgba(90, 120, 100, 0.3) 50%,
+            rgba(80, 105, 85, 0.32) 80%,
+            rgba(70, 90, 75, 0.35) 100%);
     border-radius: 0 0 30px 30px;
     /* Path Recalculation for 220px width (Center 110)
        Lip: 75-145 (70px wide).

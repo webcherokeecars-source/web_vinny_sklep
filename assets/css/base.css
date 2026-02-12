@@ -1,29 +1,29 @@
 /* === BASE & VARIABLES === */
 :root {
-    /* Sophisticated Aged Palette */
-    --color-bg: #0d0c0b;
-    --color-surface: #151311;
-    --color-surface-soft: #1d1b19;
+    /* Warm Beige Palette */
+    --color-bg: #f5efe6;
+    --color-surface: #ebe3d6;
+    --color-surface-soft: #ddd4c5;
 
     --color-primary: #7e1624;
     /* Aged Wine */
     --color-primary-light: #9b1e2e;
-    --color-accent: #c5a059;
-    /* Muted Brass/Gold */
-    --color-accent-soft: rgba(197, 160, 89, 0.08);
+    --color-accent: #9e7a2e;
+    /* Warm Antique Gold */
+    --color-accent-soft: rgba(158, 122, 46, 0.1);
 
-    --color-text: #ece2d0;
-    --color-text-dim: #b4aa99;
-    --color-text-muted: #6e6558;
+    --color-text: #3b2e24;
+    --color-text-dim: #6b5a4a;
+    --color-text-muted: #a0917e;
 
     /* Premium Typography Pairing */
     --font-heading: 'Playfair Display', 'Cormorant Garamond', serif;
     --font-body: 'Inter', sans-serif;
 
     /* Effects */
-    --glass-bg: rgba(13, 12, 11, 0.85);
-    --glass-border: rgba(197, 160, 89, 0.08);
-    --glass-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+    --glass-bg: rgba(245, 239, 230, 0.92);
+    --glass-border: rgba(158, 122, 46, 0.15);
+    --glass-shadow: 0 40px 80px rgba(60, 40, 20, 0.08);
 
     --safe-area: 8%;
 }
@@ -55,8 +55,8 @@ body {
 
     /* Organic Stone & Fine Noise Texture */
     background-image:
-        radial-gradient(circle at 50% -20%, rgba(197, 160, 89, 0.04), transparent),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        radial-gradient(circle at 50% -20%, rgba(158, 122, 46, 0.04), transparent),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
     background-attachment: fixed;
 }
 
@@ -83,11 +83,22 @@ a {
     text-decoration: none;
 }
 
+/* Accessibility - visible focus ring for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
 img {
     max-width: 100%;
     display: block;
-    filter: brightness(0.8) contrast(1.1);
-    /* Atmospheric images */
+    filter: brightness(1) contrast(1.05);
+    /* Clean images for light theme */
 }
 
 /* Custom Scrollbar */
@@ -100,7 +111,7 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-surface-soft);
+    background: #c4b8a6;
     border-radius: 10px;
 }
 

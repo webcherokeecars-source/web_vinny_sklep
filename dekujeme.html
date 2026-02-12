@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 | Sklep Drnholec</title>
+    <title>Děkujeme za zprávu | Sklep Drnholec</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 4h12l-2 10a4 4 0 01-4 4 4 4 0 01-4-4L10 4z' fill='%239e7a2e'/%3E%3Crect x='15' y='18' width='2' height='8' fill='%239e7a2e'/%3E%3Crect x='11' y='26' width='10' height='2' rx='1' fill='%239e7a2e'/%3E%3C/svg%3E">
@@ -26,39 +26,66 @@
             color: #3b2e24;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             padding: 2rem;
         }
 
-        .error-code {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(6rem, 15vw, 10rem);
-            color: #9e7a2e;
-            opacity: 0.15;
-            line-height: 1;
-            letter-spacing: -0.02em;
+        .card {
+            text-align: center;
+            max-width: 560px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(158, 122, 46, 0.15);
+            border-radius: 20px;
+            padding: 3.5rem 3rem;
+            box-shadow: 0 20px 60px rgba(60, 40, 20, 0.08);
+            backdrop-filter: blur(8px);
+            animation: fadeUp 0.8s ease-out;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, #9e7a2e 0%, #c4a44a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(158, 122, 46, 0.25);
+        }
+
+        .icon svg {
+            width: 36px;
+            height: 36px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
         }
 
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
             font-weight: 600;
             margin-bottom: 1rem;
+            color: #3b2e24;
         }
 
         p {
-            color: #6b5d52;
-            max-width: 440px;
+            font-size: 1rem;
             line-height: 1.7;
-            margin-bottom: 2.5rem;
-            font-size: 0.95rem;
+            color: #6b5d52;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            color: #9e7a2e;
+            font-weight: 500;
         }
 
         .btn {
             display: inline-block;
+            margin-top: 2rem;
             padding: 0.9rem 2.5rem;
             background: linear-gradient(135deg, #9e7a2e 0%, #b8924a 100%);
             color: #fff;
@@ -76,25 +103,32 @@
             box-shadow: 0 8px 30px rgba(158, 122, 46, 0.4);
         }
 
-        .wine-spill {
-            margin-top: 3rem;
-            opacity: 0.08;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="error-code">404</div>
-    <h1>Stránka se vypařila</h1>
-    <p>Omlouváme se, ale stránka, kterou hledáte, se bohužel někde zatoulala. Možná je právě ve sklepě na koštu.</p>
-    <a href="/" class="btn">Zpět na hlavní stránku</a>
-
-    <!-- Decorative wine glass -->
-    <svg class="wine-spill" width="60" height="80" viewBox="0 0 32 32">
-        <path d="M10 4h12l-2 10a4 4 0 01-4 4 4 4 0 01-4-4L10 4z" fill="#9e7a2e" />
-        <rect x="15" y="18" width="2" height="8" fill="#9e7a2e" />
-        <rect x="11" y="26" width="10" height="2" rx="1" fill="#9e7a2e" />
-    </svg>
+    <div class="card">
+        <div class="icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h1>Děkujeme za zprávu!</h1>
+        <p>Vaši zprávu jsme úspěšně přijali.</p>
+        <p>Ozveme se vám <span class="highlight">co nejdříve</span>, obvykle do 24 hodin.</p>
+        <a href="index.html" class="btn">Zpět na hlavní stránku</a>
+    </div>
 </body>
 
 </html>
