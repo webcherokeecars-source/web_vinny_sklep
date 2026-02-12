@@ -101,9 +101,11 @@ img {
     /* Clean images for light theme */
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Premium Thin Gold */
 ::-webkit-scrollbar {
     width: 6px;
+    /* Thinner */
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -111,12 +113,15 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c4b8a6;
+    background: rgba(158, 122, 46, 0.4);
+    /* Softer gold */
     border-radius: 10px;
+    transition: background 0.3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-accent);
+    /* Full gold on hover */
 }
 
 /* === PRELOADER === */

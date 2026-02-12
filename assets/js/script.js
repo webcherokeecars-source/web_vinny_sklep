@@ -105,47 +105,40 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const startSlider = () => {
-        if (slides.length > 0) {
-            slideTimer = setInterval(nextSlideFunc, 8000);
+        // Only auto-slide on desktop where we use the Fade effect
+        if (slides.length > 0 && window.innerWidth > 968) {
+            // Clear existing to avoid duplicates
+            if (slideTimer) clearInterval(slideTimer);
+            slideTimer = setInterval(nextSlideFunc, 6000);
         }
     };
 
     if (slides.length > 0) {
         startSlider();
-        if (prevBtn) prevBtn.addEventListener('click', () => { prevSlideFunc(); clearInterval(slideTimer); startSlider(); });
-        if (nextBtn) nextBtn.addEventListener('click', () => { nextSlideFunc(); clearInterval(slideTimer); startSlider(); });
 
-        /* --- Touch Swipe Support for Mobile --- */
-        const galleryContainer = document.querySelector('.gallery-carousel');
-        let touchStartX = 0;
-        let touchEndX = 0;
+        // Handle resize to switch modes
+        window.addEventListener('resize', () => {
+            startSlider();
+        });
 
-        if (galleryContainer) {
-            galleryContainer.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
+        if (prevBtn) prevBtn.addEventListener('click', () => { prevSlideFunc(); startSlider(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { nextSlideFunc(); startSlider(); });
 
-            galleryContainer.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, { passive: true });
+        // Touch swipe JS logic removed - replaced by native CSS Scroll Snap in components.css
+        // This provides a much smoother, native "1:1" feel on mobile devices.
+
+        /* --- Parallax Effect --- */
+        const parallaxElements = document.querySelectorAll('.parallax');
+        if (parallaxElements.length > 0 && window.innerWidth > 968) {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                parallaxElements.forEach(el => {
+                    const speed = el.getAttribute('data-speed') || 0.5;
+                    const yPos = -(scrolled * speed);
+                    el.style.transform = `translateY(${yPos}px)`;
+                });
+            });
         }
-
-        const handleSwipe = () => {
-            const swipeThreshold = 50; // min distance
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe Left -> Next
-                nextSlideFunc();
-                clearInterval(slideTimer);
-                startSlider();
-            }
-            if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe Right -> Prev
-                prevSlideFunc();
-                clearInterval(slideTimer);
-                startSlider();
-            }
-        };
 
         /* --- Lightbox --- */
         const lightbox = document.getElementById('gallery-lightbox');
@@ -560,4 +553,40 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- Initializers --- */
     window.addEventListener('scroll', updateBottleAndNav, { passive: true });
     updateBottleAndNav();
+
+    /* --- Custom Cursor Logic --- */
+    const cursor = document.createElement('div');
+    cursor.classList.add('custom-cursor');
+    document.body.appendChild(cursor);
+
+    // Only activate on non-touch devices
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth follow loop
+        const animateCursor = () => {
+            // Linear interpolation for "magnetic" delay
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+
+            requestAnimationFrame(animateCursor);
+        };
+        animateCursor();
+
+        // Hover effect for interactive elements
+        const hoverElements = document.querySelectorAll('a, button, .card, input, textarea, label, .gallery-nav, .lightbox-nav');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+        });
+    }
 });

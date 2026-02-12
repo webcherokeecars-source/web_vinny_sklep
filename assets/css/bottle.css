@@ -20,6 +20,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    animation: float 8s ease-in-out infinite;
+    /* Gentle breathing effect */
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
 }
 
 /* Glass Bottle Shape - Refined Silhouette (Narrower: 220px) */
@@ -151,13 +165,25 @@
     }
 
     .bottle-wrapper {
-        transform: scale(0.65);
-        /* Smaller scale for better fit on average mobile height */
+        /* Mobile Scale + Float Animation */
         transform-origin: center center;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
+        animation: floatMobile 8s ease-in-out infinite;
+    }
+
+    @keyframes floatMobile {
+
+        0%,
+        100% {
+            transform: scale(0.65) translateY(0);
+        }
+
+        50% {
+            transform: scale(0.65) translateY(-15px);
+        }
     }
 }
 
