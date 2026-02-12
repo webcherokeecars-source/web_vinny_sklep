@@ -138,27 +138,26 @@
 /* Responsive */
 @media (max-width: 968px) {
     .bottle-container {
-        display: block;
-        width: 220px;
-        opacity: 0.18;
-        filter: none;
-        z-index: 1;
+        position: fixed;
         top: 50%;
-        /* Centered Vertically */
         left: 50%;
         transform: translate(-50%, -50%);
-        /* Centered in Viewport */
-        pointer-events: none;
+        width: 220px;
         height: auto;
+        display: block;
+        z-index: 1;
+        opacity: 0.18;
+        pointer-events: none;
     }
 
     .bottle-wrapper {
-        transform: scale(0.85);
-        /* Increased from 0.65 */
+        transform: scale(0.65);
+        /* Smaller scale for better fit on average mobile height */
         transform-origin: center center;
-        /* Center scaling to keep it centered */
         width: 100%;
-        position: static;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 }
 
@@ -168,7 +167,7 @@
     }
 
     .bottle-wrapper {
-        transform: scale(0.8);
-        /* Increased from 0.6 */
+        transform: scale(0.55);
+        /* Even smaller for small screens */
     }
 }
