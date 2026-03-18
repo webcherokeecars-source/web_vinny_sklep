@@ -292,14 +292,18 @@
     position: absolute;
     inset: 0;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 1.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .gallery-slide.active {
     opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
 }
 
 .gallery-slide img {
@@ -333,6 +337,7 @@
         flex: 0 0 100%;
         width: 100%;
         opacity: 1 !important;
+        pointer-events: auto !important;
         /* Always visible for scroll */
         scroll-snap-align: center;
         inset: auto;

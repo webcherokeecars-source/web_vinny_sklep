@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const openLightbox = (index) => {
             if (!lightbox || !galleryImages.length) return;
+            if (slideTimer) clearInterval(slideTimer); // Pause slider
             lightboxIndex = index;
             lightboxImg.src = galleryImages[lightboxIndex];
             lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
@@ -165,6 +166,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!lightbox) return;
             lightbox.classList.remove('active');
             document.body.style.overflow = '';
+            
+            // Sync background gallery with currently viewed image
+            if (slides[lightboxIndex]) {
+                showSlide(lightboxIndex);
+                if (window.innerWidth > 968) {
+                    startSlider(); // Resume slider
+                } else {
+                    // Sync native scroll position for mobile
+                    slides[lightboxIndex].scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'center' });
+                }
+            }
         };
 
         const lightboxPrevFunc = () => {
