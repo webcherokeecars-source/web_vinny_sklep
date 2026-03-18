@@ -1,9 +1,9 @@
 /**
- * Sklep Drnholec - Main Scripts
+ * Apartmán nad sklípkem - Main Scripts
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Sklep Drnholec scripts initialized");
+    console.log("Apartmán nad sklípkem scripts initialized");
 
     const liquid = document.getElementById('wine-liquid');
     const nav = document.querySelector('.main-nav');
