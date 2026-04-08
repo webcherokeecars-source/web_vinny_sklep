@@ -768,6 +768,57 @@
     opacity: 0.2;
 }
 
+/* Selected Date Highlighting */
+.cal-checkin, .cal-checkout {
+    background: var(--color-accent) !important;
+    color: white !important;
+    transform: scale(1.1);
+    z-index: 3;
+    box-shadow: 0 4px 15px rgba(158, 122, 46, 0.4);
+}
+
+.cal-range {
+    background: rgba(158, 122, 46, 0.12) !important;
+    position: relative;
+}
+
+.cal-range::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed rgba(158, 122, 46, 0.2);
+    border-radius: 4px;
+}
+
+/* Error Message */
+.calendar-error-msg {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: rgba(158, 122, 46, 0.03);
+    border-radius: 12px;
+    border: 1px dashed var(--glass-border);
+}
+
+.calendar-error-msg p {
+    margin-bottom: 1.5rem;
+    color: var(--color-text-dim);
+    font-size: 0.95rem;
+}
+
+/* Fallback Iframe Styling */
+.calendar-iframe-fallback {
+    width: 100%;
+    min-height: 480px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.calendar-table td[aria-label] {
+    cursor: default;
+}
+
 /* Source Link Styling */
 .calendar-source {
     text-align: center;

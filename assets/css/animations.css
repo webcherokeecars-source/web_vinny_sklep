@@ -62,3 +62,14 @@
 body:hover .mouse-glow {
     opacity: 1;
 }
+
+/* Date Selection UI Feedback */
+@keyframes datePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.date-selected-pulse {
+    animation: datePulse 0.4s ease;
+}

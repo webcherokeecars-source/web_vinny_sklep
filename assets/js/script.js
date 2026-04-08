@@ -404,65 +404,120 @@ document.addEventListener('DOMContentLoaded', () => {
     if (calendarContainer) {
         let calendarData = []; // Store parsed months
         let currentIndex = 0;
-        const objectId = '1757';
+        const objectId = '21317';
         const months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
 
         const fetchCalendarData = async () => {
-            try {
-                // Switching to a more stable proxy and adding cache-busting
-                const targetUrl = `https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&legenda=ne&jednotky=ne&_t=${Date.now()}`;
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+            const targetUrl = `https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&legenda=ne&jednotky=ne&_t=${Date.now()}`;
+            
+            // List of proxies to try
+            const proxies = [
+                `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
 
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Proxy response not ok');
-                const htmlString = await response.text();
+            const tryFetch = async (url, index) => {
+                try {
+                    console.log(`Trying proxy ${index + 1}...`);
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Proxy error');
+                    
+                    let htmlString = '';
+                    if (url.includes('allorigins')) {
+                        const data = await response.json();
+                        htmlString = data.contents;
+                    } else {
+                        htmlString = await response.text();
+                    }
 
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlString, 'text/html');
-                const tables = doc.querySelectorAll('table.month');
+                    if (!htmlString || !htmlString.includes('table')) throw new Error('Invalid content');
 
-                calendarData = Array.from(tables).map(table => {
-                    const name = table.querySelector('.month-name')?.textContent || '';
-                    const [monthName, year] = name.split(' ');
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlString, 'text/html');
+                    const tables = doc.querySelectorAll('table.month');
+                    
+                    if (tables.length === 0) throw new Error('No tables');
 
-                    const rows = Array.from(table.querySelectorAll('tr')).slice(2); // Skip header and day names
-                    const days = [];
+                    calendarData = Array.from(tables).map(table => {
+                        const name = table.querySelector('.month-name')?.textContent || '';
+                        const parts = name.trim().split(/\s+/);
+                        const monthName = parts[0];
+                        const year = parts[parts.length - 1];
 
-                    rows.forEach(row => {
-                        const cells = Array.from(row.querySelectorAll('td'));
-                        cells.forEach(cell => {
-                            const className = cell.className;
-                            const dayNum = cell.textContent.trim();
-                            let status = 'empty';
+                        const rows = Array.from(table.querySelectorAll('tr')).slice(2);
+                        const days = [];
 
-                            // Logic to map e-chalupy classes to our custom ones
-                            if (className.includes('day-free')) status = 'free';
-                            if (className.includes('day-full')) status = 'full';
+                        rows.forEach(row => {
+                            const cells = Array.from(row.querySelectorAll('td'));
+                            cells.forEach(cell => {
+                                const className = cell.className;
+                                const dayNum = cell.textContent.trim();
+                                let status = 'empty';
 
-                            // Special cases for arrival/departure (z/k classes)
-                            if (className.includes('day-full') && className.includes('z')) status = 'arrival';
-                            if (className.includes('day-full') && className.includes('k')) status = 'departure';
+                                if (className.includes('day-free')) status = 'free';
+                                if (className.includes('day-full')) status = 'full';
+                                if (className.includes('day-full') && className.includes('z')) status = 'arrival';
+                                if (className.includes('day-full') && className.includes('k')) status = 'departure';
+                                if (className.includes('day-shdw')) status = 'empty';
 
-                            // If it's a 'shdw' day (from prev/next month), treat as empty
-                            if (className.includes('day-shdw')) status = 'empty';
-
-                            days.push({ day: dayNum, status: status });
+                                days.push({ day: dayNum, status: status });
+                            });
                         });
+
+                        return { month: monthName, year: year, days: days };
                     });
 
-                    return { month: monthName, year: year, days: days };
-                });
+                    renderCalendar(currentIndex);
+                    return true;
+                } catch (e) {
+                    console.warn(`Proxy ${index + 1} failed:`, e.message);
+                    return false;
+                }
+            };
 
-                renderCalendar(0);
-            } catch (error) {
-                console.error("CALENDAR ERROR:", error);
-                calendarContainer.innerHTML = '<p class="error">Nepodařilo se načíst data kalendáře.</p>';
+            // Sequential try
+            let success = false;
+            for (let i = 0; i < proxies.length; i++) {
+                success = await tryFetch(proxies[i], i);
+                if (success) break;
+            }
+
+            if (!success) {
+                console.error("All proxies failed. Falling back to official iframe.");
+                showIframeFallback();
+            }
+        };
+
+        const showIframeFallback = () => {
+            // Load resize.js for the iframe
+            if (!document.querySelector('script[src*="resize.js"]')) {
+                const script = document.createElement('script');
+                script.src = "https://obsazenost.e-chalupy.cz/resize.js";
+                document.head.appendChild(script);
+            }
+
+            // If all custom attempts fail, use the official iframe but style it nicely
+            const widget = document.querySelector('.calendar-widget');
+            if (widget) {
+                widget.innerHTML = `
+                    <div class="calendar-iframe-fallback">
+                        <iframe src="https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&velikost=3&legenda=ano&vybraneMesice=&naStred=ano&ctvrtleti=ne&stin=ne&jazyk=cz&jednotky=ano&idJednotky=0&vypisJednotky=ne&souhrnny=&pozadi=f5efe6&kalendarText=3b2e24&kalendarPozadi=ffffff&ramecek=9e7a2e&mesicText=3b2e24&mesicPozadi=ebe3d6&dnyText=3b2e24&dnyPozadia=ffffff&obsazenoText=ffffff&obsazenoPozadi=7e1624&volnoText=3b2e24&volnoPozadi=ffffff&castecneText=3b2e24&castecnePozadi=ebe3d6&neaktivniDnyText=bbbbbb&neaktivniDnyPozadi=ffffff&legendaText=3b2e24&fontFamily=Verdana&extCss=" 
+                        height="460px" width="100%" frameborder="0" id="echalupy-kalendar"></iframe>
+                    </div>
+                    <div class="calendar-source mt-4">
+                        <span>Zdroj dat:</span>
+                        <a href="https://www.e-chalupy.cz/objekt/${objectId}/" target="_blank" rel="noopener">e-chalupy.cz</a>
+                    </div>
+                `;
             }
         };
 
         const renderCalendar = (index) => {
             if (!calendarData[index]) return;
             const data = calendarData[index];
+            const checkinVal = document.getElementById('checkin')?.value;
+            const checkoutVal = document.getElementById('checkout')?.value;
 
             // 1. Update Labels
             if (monthLabel) monthLabel.textContent = data.month;
@@ -491,15 +546,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Add click handler for selectable days
                     let clickAttr = '';
+                    let extraClass = '';
                     if (isSelectable) {
                         const monthNum = months.indexOf(data.month) + 1;
                         const formattedMonth = monthNum < 10 ? `0${monthNum}` : monthNum;
                         const formattedDay = parseInt(dayObj.day) < 10 ? `0${dayObj.day}` : dayObj.day;
                         const isoDate = `${data.year}-${formattedMonth}-${formattedDay}`;
                         clickAttr = `onclick="selectCalendarDate('${isoDate}')" style="cursor: pointer"`;
+
+                        // Highlight selection
+                        if (isoDate === checkinVal) extraClass = ' cal-checkin';
+                        else if (isoDate === checkoutVal) extraClass = ' cal-checkout';
+                        else if (checkinVal && checkoutVal && isoDate > checkinVal && isoDate < checkoutVal) extraClass = ' cal-range';
                     }
 
-                    html += `<td class="${cellClass}" ${clickAttr}>${dayObj.day}</td>`;
+                    html += `<td class="${cellClass}${extraClass}" ${clickAttr} aria-label="${dayObj.day}. ${data.month} ${data.year}">${dayObj.day}</td>`;
                 }
                 html += '</tr>';
             }
@@ -522,20 +583,54 @@ document.addEventListener('DOMContentLoaded', () => {
         // Global helper for the onclick attribute
         window.selectCalendarDate = (dateString) => {
             const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
             const contactSection = document.getElementById('contact');
 
-            if (checkinInput) {
+            if (!checkinInput || !checkoutInput) return;
+
+            // Logic: 
+            // 1. If both empty OR both filled -> set check-in, clear check-out
+            // 2. If check-in filled, checkout empty -> if new date > check-in, set checkout. Else set check-in.
+            
+            const newDate = new Date(dateString);
+            const checkinDate = checkinInput.value ? new Date(checkinInput.value) : null;
+            const checkoutDate = checkoutInput.value ? new Date(checkoutInput.value) : null;
+
+            if ((!checkinInput.value && !checkoutInput.value) || (checkinInput.value && checkoutInput.value)) {
+                // Start new selection
                 checkinInput.value = dateString;
-                // Add a small highlight effect to the input
-                checkinInput.style.backgroundColor = 'rgba(158, 122, 46, 0.1)';
-                setTimeout(() => {
-                    checkinInput.style.backgroundColor = 'transparent';
-                }, 1000);
+                checkoutInput.value = '';
+                highlightInput(checkinInput);
+            } else if (checkinInput.value && !checkoutInput.value) {
+                if (newDate > checkinDate) {
+                    // Set checkout
+                    checkoutInput.value = dateString;
+                    highlightInput(checkoutInput);
+                    
+                    // After selection, scroll to contact
+                    if (contactSection) {
+                        setTimeout(() => {
+                           contactSection.scrollIntoView({ behavior: 'smooth' });
+                        }, 500);
+                    }
+                } else {
+                    // New date is earlier, make it check-in instead
+                    checkinInput.value = dateString;
+                    highlightInput(checkinInput);
+                }
             }
 
-            if (contactSection) {
-                contactSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            // Refresh view to show highlights
+            renderCalendar(currentIndex);
+        };
+
+        const highlightInput = (el) => {
+            el.classList.add('date-selected-pulse');
+            el.style.backgroundColor = 'rgba(158, 122, 46, 0.15)';
+            setTimeout(() => {
+                el.style.backgroundColor = 'transparent';
+                el.classList.remove('date-selected-pulse');
+            }, 1000);
         };
 
 
