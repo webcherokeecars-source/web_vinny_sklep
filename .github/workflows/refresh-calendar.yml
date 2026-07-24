@@ -1,0 +1,49 @@
+name: Refresh calendar availability
+
+# Keeps assets/data/kalendar.html in sync with the e-chalupy availability calendar.
+# The site (static GitHub Pages) reads that committed file same-origin, so it never
+# depends on flaky public CORS proxies at runtime.
+
+on:
+  schedule:
+    - cron: "0 */3 * * *" # every 3 hours
+  workflow_dispatch: # allow manual "Run workflow"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-calendar
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch availability from e-chalupy
+        run: |
+          mkdir -p assets/data
+          curl -fsS --retry 3 --retry-delay 5 \
+            "https://obsazenost.e-chalupy.cz/kalendar.php?id=21317&pocetMesicu=12&legenda=ne&jednotky=ne" \
+            -o assets/data/kalendar.html
+
+      - name: Validate response
+        run: |
+          if ! grep -qi "month-name" assets/data/kalendar.html; then
+            echo "::error::Fetched file is not a valid calendar (no month tables). Aborting so we keep the previous good copy."
+            exit 1
+          fi
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/data/kalendar.html
+          if git diff --staged --quiet; then
+            echo "No availability changes."
+          else
+            git commit -m "chore: refresh calendar availability"
+            git push
+          fi
