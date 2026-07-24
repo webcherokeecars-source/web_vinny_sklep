@@ -2,322 +2,358 @@
  * Apartmán nad sklípkem - Main Scripts
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Apartmán nad sklípkem scripts initialized");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Apartmán nad sklípkem scripts initialized");
 
-    const liquid = document.getElementById('wine-liquid');
-    const nav = document.querySelector('.main-nav');
-    const cards = document.querySelectorAll('.card');
+  const liquid = document.getElementById("wine-liquid");
+  const nav = document.querySelector(".main-nav");
+  const cards = document.querySelectorAll(".card");
 
-    /* --- Scroll & Navigation Sync --- */
-    const updateBottleAndNav = () => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / scrollHeight);
+  /* --- Scroll & Navigation Sync --- */
+  const updateBottleAndNav = () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = scrollTop / scrollHeight;
 
-        // Liquid Level (90% to 5%)
-        if (liquid) {
-            const level = 90 - (scrollPercent * 85);
-            liquid.style.height = `${Math.max(5, Math.min(90, level))}%`;
-        }
-
-        // Navigation Style
-        if (nav) {
-            if (scrollTop > 80) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        }
-    };
-
-    /* --- Mouse Interaction (Flashlight & Cards) --- */
-    // Optimization: Only enable on desktop to save resources on mobile
-    if (window.innerWidth > 968) {
-        const glow = document.createElement('div');
-        glow.className = 'mouse-glow';
-        document.body.appendChild(glow);
-
-        let curX = 0, curY = 0;
-        let glowX = 0, glowY = 0;
-
-        window.addEventListener('mousemove', (e) => {
-            curX = e.clientX;
-            curY = e.clientY;
-
-            // Local mouse position for cards
-            cards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                if (e.clientX > rect.left && e.clientX < rect.right && e.clientY > rect.top && e.clientY < rect.bottom) {
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    card.style.setProperty('--mouse-x', `${x}%`);
-                    card.style.setProperty('--mouse-y', `${y}%`);
-                }
-            });
-        });
-
-        const animateGlow = () => {
-            glowX += (curX - glowX) * 0.08;
-            glowY += (curY - glowY) * 0.08;
-            glow.style.left = `${glowX}px`;
-            glow.style.top = `${glowY}px`;
-            requestAnimationFrame(animateGlow);
-        };
-        animateGlow();
+    // Liquid Level (90% to 5%)
+    if (liquid) {
+      const level = 90 - scrollPercent * 85;
+      liquid.style.height = `${Math.max(5, Math.min(90, level))}%`;
     }
 
-    /* --- Scroll Reveal Observer --- */
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-            }
-        });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    // Navigation Style
+    if (nav) {
+      if (scrollTop > 80) {
+        nav.classList.add("scrolled");
+      } else {
+        nav.classList.remove("scrolled");
+      }
+    }
+  };
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  /* --- Mouse Interaction (Flashlight & Cards) --- */
+  // Optimization: Only enable on desktop to save resources on mobile
+  if (window.innerWidth > 968) {
+    const glow = document.createElement("div");
+    glow.className = "mouse-glow";
+    document.body.appendChild(glow);
 
-    /* --- Gallery Logic --- */
-    const slides = document.querySelectorAll('.gallery-slide');
-    const dots = document.querySelectorAll('.dot');
-    const thumbs = document.querySelectorAll('.gallery-thumb');
-    const prevBtn = document.querySelector('.nav-prev');
-    const nextBtn = document.querySelector('.nav-next');
-    let currentSlide = 0;
-    let slideTimer;
+    let curX = 0,
+      curY = 0;
+    let glowX = 0,
+      glowY = 0;
 
-    const showSlide = (index) => {
-        if (!slides.length) return;
-        slides.forEach(s => s.classList.remove('active'));
-        slides[index].classList.add('active');
-        currentSlide = index;
-    };
+    window.addEventListener("mousemove", (e) => {
+      curX = e.clientX;
+      curY = e.clientY;
 
-    const nextSlideFunc = () => {
-        let next = (currentSlide + 1) % slides.length;
-        showSlide(next);
-    };
-
-    const prevSlideFunc = () => {
-        let prev = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(prev);
-    };
-
-    const startSlider = () => {
-        // Only auto-slide on desktop where we use the Fade effect
-        if (slides.length > 0 && window.innerWidth > 968) {
-            // Clear existing to avoid duplicates
-            if (slideTimer) clearInterval(slideTimer);
-            slideTimer = setInterval(nextSlideFunc, 6000);
+      // Local mouse position for cards
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        if (
+          e.clientX > rect.left &&
+          e.clientX < rect.right &&
+          e.clientY > rect.top &&
+          e.clientY < rect.bottom
+        ) {
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          card.style.setProperty("--mouse-x", `${x}%`);
+          card.style.setProperty("--mouse-y", `${y}%`);
         }
-    };
-
-    if (slides.length > 0) {
-        startSlider();
-
-        // Handle resize to switch modes
-        window.addEventListener('resize', () => {
-            startSlider();
-        });
-
-        if (prevBtn) prevBtn.addEventListener('click', () => { prevSlideFunc(); startSlider(); });
-        if (nextBtn) nextBtn.addEventListener('click', () => { nextSlideFunc(); startSlider(); });
-
-        // Touch swipe JS logic removed - replaced by native CSS Scroll Snap in components.css
-        // This provides a much smoother, native "1:1" feel on mobile devices.
-
-        /* --- Parallax Effect --- */
-        const parallaxElements = document.querySelectorAll('.parallax');
-        if (parallaxElements.length > 0 && window.innerWidth > 968) {
-            window.addEventListener('scroll', () => {
-                const scrolled = window.pageYOffset;
-                parallaxElements.forEach(el => {
-                    const speed = el.getAttribute('data-speed') || 0.5;
-                    const yPos = -(scrolled * speed);
-                    el.style.transform = `translateY(${yPos}px)`;
-                });
-            });
-        }
-
-        /* --- Lightbox --- */
-        const lightbox = document.getElementById('gallery-lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const lightboxCounter = document.getElementById('lightbox-counter');
-        const lightboxClose = document.querySelector('.lightbox-close');
-        const lightboxPrev = document.querySelector('.lightbox-prev');
-        const lightboxNext = document.querySelector('.lightbox-next');
-        const fullscreenBtn = document.querySelector('.gallery-fullscreen-btn');
-        let lightboxIndex = 0;
-
-        const galleryImages = Array.from(slides).map(s => s.querySelector('img')?.src).filter(Boolean);
-
-        const openLightbox = (index) => {
-            if (!lightbox || !galleryImages.length) return;
-            if (slideTimer) clearInterval(slideTimer); // Pause slider
-            lightboxIndex = index;
-            lightboxImg.src = galleryImages[lightboxIndex];
-            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-
-        const closeLightbox = () => {
-            if (!lightbox) return;
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            // Sync background gallery with currently viewed image
-            if (slides[lightboxIndex]) {
-                showSlide(lightboxIndex);
-                if (window.innerWidth > 968) {
-                    startSlider(); // Resume slider
-                } else {
-                    // Sync native scroll position for mobile
-                    slides[lightboxIndex].scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'center' });
-                }
-            }
-        };
-
-        const lightboxPrevFunc = () => {
-            lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
-            lightboxImg.src = galleryImages[lightboxIndex];
-            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
-        };
-
-        const lightboxNextFunc = () => {
-            lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
-            lightboxImg.src = galleryImages[lightboxIndex];
-            lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
-        };
-
-        if (fullscreenBtn) fullscreenBtn.addEventListener('click', () => openLightbox(currentSlide));
-        if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-        if (lightboxPrev) lightboxPrev.addEventListener('click', lightboxPrevFunc);
-        if (lightboxNext) lightboxNext.addEventListener('click', lightboxNextFunc);
-
-        // Click on slide image to open lightbox
-        slides.forEach((slide, idx) => {
-            slide.style.cursor = 'pointer';
-            slide.addEventListener('click', () => openLightbox(idx));
-        });
-
-        // Close on background click
-        if (lightbox) {
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) closeLightbox();
-            });
-        }
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox || !lightbox.classList.contains('active')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') lightboxPrevFunc();
-            if (e.key === 'ArrowRight') lightboxNextFunc();
-        });
-    }
-
-    /* --- Mobile Menu Toggle (Dedicated Overlay) --- */
-    const mobileBtn = document.querySelector('.mobile-menu-btn');
-    const mobileOverlay = document.querySelector('.mobile-menu-overlay');
-
-    if (mobileBtn && mobileOverlay) {
-        console.log("Mobile menu initialized with dedicated overlay");
-
-        const toggleMenu = (e) => {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            console.log("Toggling menu...");
-            mobileBtn.classList.toggle('active');
-            mobileOverlay.classList.toggle('open');
-            document.body.classList.toggle('menu-open');
-        };
-
-        const closeMenu = () => {
-            mobileBtn.classList.remove('active');
-            mobileOverlay.classList.remove('open');
-            document.body.classList.remove('menu-open');
-        };
-
-        // Toggle button click
-        mobileBtn.addEventListener('click', toggleMenu);
-
-        // Close when clicking links
-        mobileOverlay.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', closeMenu);
-        });
-
-        // Close when clicking outside of the menu content
-        /* Note: Since it's full screen, 'outside' is less relevant, 
-           but typically we might close if clicking on a transparent area?
-           However, the whole overlay is opaque now. We can add this for robustness. */
-        document.addEventListener('click', (e) => {
-            if (mobileOverlay.classList.contains('open') &&
-                !mobileOverlay.contains(e.target) &&
-                !mobileBtn.contains(e.target)) {
-                closeMenu();
-            }
-        });
-    } else {
-        console.error("Mobile menu elements missing (overlay mode)");
-    }
-
-    /* --- Preloader Logic --- */
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                preloader.classList.add('loaded');
-                // Allow scroll after load if we were blocking it
-                document.body.style.overflow = 'visible';
-            }, 1000); // 1s delay for cinematic feel
-        });
-    }
-
-    /* --- Contact Form Handling --- */
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
-            // Optional: If you want to use AJAX instead of redirect
-            // For now, we keep the direct form submit as configured for FormSubmit.co
-            // but we can add validation or loading state here.
-            const btn = this.querySelector('button[type="submit"]');
-            if (btn) {
-                btn.textContent = 'Odesílání...';
-                btn.style.opacity = '0.7';
-            }
-        });
-    }
-
-    /* --- Active Navigation State --- */
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-links a, .mobile-nav-links a');
-
-    const activeLinkObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                if (id) {
-                    navLinks.forEach(link => {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === `#${id}`) {
-                            link.classList.add('active');
-                        }
-                    });
-                }
-            }
-        });
-    }, { threshold: 0.5, rootMargin: "-10% 0px -50% 0px" }); // Activate when 50% visible or entering focus zone
-
-    sections.forEach(section => {
-        activeLinkObserver.observe(section);
+      });
     });
 
-    /* --- Cookie Consent Logic --- */
-    const cookieBannerHTML = `
+    const animateGlow = () => {
+      glowX += (curX - glowX) * 0.08;
+      glowY += (curY - glowY) * 0.08;
+      glow.style.left = `${glowX}px`;
+      glow.style.top = `${glowY}px`;
+      requestAnimationFrame(animateGlow);
+    };
+    animateGlow();
+  }
+
+  /* --- Scroll Reveal Observer --- */
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
+  );
+
+  document
+    .querySelectorAll(".reveal")
+    .forEach((el) => revealObserver.observe(el));
+
+  /* --- Gallery Logic --- */
+  const slides = document.querySelectorAll(".gallery-slide");
+  const dots = document.querySelectorAll(".dot");
+  const thumbs = document.querySelectorAll(".gallery-thumb");
+  const prevBtn = document.querySelector(".nav-prev");
+  const nextBtn = document.querySelector(".nav-next");
+  let currentSlide = 0;
+  let slideTimer;
+
+  const showSlide = (index) => {
+    if (!slides.length) return;
+    slides.forEach((s) => s.classList.remove("active"));
+    slides[index].classList.add("active");
+    currentSlide = index;
+  };
+
+  const nextSlideFunc = () => {
+    let next = (currentSlide + 1) % slides.length;
+    showSlide(next);
+  };
+
+  const prevSlideFunc = () => {
+    let prev = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(prev);
+  };
+
+  const startSlider = () => {
+    // Only auto-slide on desktop where we use the Fade effect
+    if (slides.length > 0 && window.innerWidth > 968) {
+      // Clear existing to avoid duplicates
+      if (slideTimer) clearInterval(slideTimer);
+      slideTimer = setInterval(nextSlideFunc, 6000);
+    }
+  };
+
+  if (slides.length > 0) {
+    startSlider();
+
+    // Handle resize to switch modes
+    window.addEventListener("resize", () => {
+      startSlider();
+    });
+
+    if (prevBtn)
+      prevBtn.addEventListener("click", () => {
+        prevSlideFunc();
+        startSlider();
+      });
+    if (nextBtn)
+      nextBtn.addEventListener("click", () => {
+        nextSlideFunc();
+        startSlider();
+      });
+
+    // Touch swipe JS logic removed - replaced by native CSS Scroll Snap in components.css
+    // This provides a much smoother, native "1:1" feel on mobile devices.
+
+    /* --- Parallax Effect --- */
+    const parallaxElements = document.querySelectorAll(".parallax");
+    if (parallaxElements.length > 0 && window.innerWidth > 968) {
+      window.addEventListener("scroll", () => {
+        const scrolled = window.pageYOffset;
+        parallaxElements.forEach((el) => {
+          const speed = el.getAttribute("data-speed") || 0.5;
+          const yPos = -(scrolled * speed);
+          el.style.transform = `translateY(${yPos}px)`;
+        });
+      });
+    }
+
+    /* --- Lightbox --- */
+    const lightbox = document.getElementById("gallery-lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxCounter = document.getElementById("lightbox-counter");
+    const lightboxClose = document.querySelector(".lightbox-close");
+    const lightboxPrev = document.querySelector(".lightbox-prev");
+    const lightboxNext = document.querySelector(".lightbox-next");
+    const fullscreenBtn = document.querySelector(".gallery-fullscreen-btn");
+    let lightboxIndex = 0;
+
+    const galleryImages = Array.from(slides)
+      .map((s) => s.querySelector("img")?.src)
+      .filter(Boolean);
+
+    const openLightbox = (index) => {
+      if (!lightbox || !galleryImages.length) return;
+      if (slideTimer) clearInterval(slideTimer); // Pause slider
+      lightboxIndex = index;
+      lightboxImg.src = galleryImages[lightboxIndex];
+      lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+      lightbox.classList.add("active");
+      document.body.style.overflow = "hidden";
+    };
+
+    const closeLightbox = () => {
+      if (!lightbox) return;
+      lightbox.classList.remove("active");
+      document.body.style.overflow = "";
+
+      // Sync background gallery with currently viewed image
+      if (slides[lightboxIndex]) {
+        showSlide(lightboxIndex);
+        if (window.innerWidth > 968) {
+          startSlider(); // Resume slider
+        } else {
+          // Sync native scroll position for mobile
+          slides[lightboxIndex].scrollIntoView({
+            behavior: "instant",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+      }
+    };
+
+    const lightboxPrevFunc = () => {
+      lightboxIndex =
+        (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+      lightboxImg.src = galleryImages[lightboxIndex];
+      lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+    };
+
+    const lightboxNextFunc = () => {
+      lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
+      lightboxImg.src = galleryImages[lightboxIndex];
+      lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
+    };
+
+    if (fullscreenBtn)
+      fullscreenBtn.addEventListener("click", () => openLightbox(currentSlide));
+    if (lightboxClose) lightboxClose.addEventListener("click", closeLightbox);
+    if (lightboxPrev) lightboxPrev.addEventListener("click", lightboxPrevFunc);
+    if (lightboxNext) lightboxNext.addEventListener("click", lightboxNextFunc);
+
+    // Click on slide image to open lightbox
+    slides.forEach((slide, idx) => {
+      slide.style.cursor = "pointer";
+      slide.addEventListener("click", () => openLightbox(idx));
+    });
+
+    // Close on background click
+    if (lightbox) {
+      lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox || !lightbox.classList.contains("active")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") lightboxPrevFunc();
+      if (e.key === "ArrowRight") lightboxNextFunc();
+    });
+  }
+
+  /* --- Mobile Menu Toggle (Dedicated Overlay) --- */
+  const mobileBtn = document.querySelector(".mobile-menu-btn");
+  const mobileOverlay = document.querySelector(".mobile-menu-overlay");
+
+  if (mobileBtn && mobileOverlay) {
+    console.log("Mobile menu initialized with dedicated overlay");
+
+    const toggleMenu = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      console.log("Toggling menu...");
+      mobileBtn.classList.toggle("active");
+      mobileOverlay.classList.toggle("open");
+      document.body.classList.toggle("menu-open");
+    };
+
+    const closeMenu = () => {
+      mobileBtn.classList.remove("active");
+      mobileOverlay.classList.remove("open");
+      document.body.classList.remove("menu-open");
+    };
+
+    // Toggle button click
+    mobileBtn.addEventListener("click", toggleMenu);
+
+    // Close when clicking links
+    mobileOverlay.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    // Close when clicking outside of the menu content
+    /* Note: Since it's full screen, 'outside' is less relevant, 
+           but typically we might close if clicking on a transparent area?
+           However, the whole overlay is opaque now. We can add this for robustness. */
+    document.addEventListener("click", (e) => {
+      if (
+        mobileOverlay.classList.contains("open") &&
+        !mobileOverlay.contains(e.target) &&
+        !mobileBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+  } else {
+    console.error("Mobile menu elements missing (overlay mode)");
+  }
+
+  /* --- Preloader Logic --- */
+  const preloader = document.getElementById("preloader");
+  if (preloader) {
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        preloader.classList.add("loaded");
+        // Allow scroll after load if we were blocking it
+        document.body.style.overflow = "visible";
+      }, 1000); // 1s delay for cinematic feel
+    });
+  }
+
+  /* --- Contact Form Handling --- */
+  const contactForm = document.querySelector(".contact-form");
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (e) {
+      // Optional: If you want to use AJAX instead of redirect
+      // For now, we keep the direct form submit as configured for FormSubmit.co
+      // but we can add validation or loading state here.
+      const btn = this.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.textContent = "Odesílání...";
+        btn.style.opacity = "0.7";
+      }
+    });
+  }
+
+  /* --- Active Navigation State --- */
+  const sections = document.querySelectorAll("section");
+  const navLinks = document.querySelectorAll(
+    ".nav-links a, .mobile-nav-links a",
+  );
+
+  const activeLinkObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("id");
+          if (id) {
+            navLinks.forEach((link) => {
+              link.classList.remove("active");
+              if (link.getAttribute("href") === `#${id}`) {
+                link.classList.add("active");
+              }
+            });
+          }
+        }
+      });
+    },
+    { threshold: 0.5, rootMargin: "-10% 0px -50% 0px" },
+  ); // Activate when 50% visible or entering focus zone
+
+  sections.forEach((section) => {
+    activeLinkObserver.observe(section);
+  });
+
+  /* --- Cookie Consent Logic --- */
+  const cookieBannerHTML = `
     <div class="cookie-banner" id="cookie-banner">
         <div class="container">
             <div class="cookie-content">
@@ -333,198 +369,269 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>`;
 
-    // Insert Banner
-    document.body.insertAdjacentHTML('beforeend', cookieBannerHTML);
+  // Insert Banner
+  document.body.insertAdjacentHTML("beforeend", cookieBannerHTML);
 
-    const cookieBanner = document.getElementById('cookie-banner');
-    const btnAccept = document.getElementById('cookie-accept');
-    const btnReject = document.getElementById('cookie-reject');
-    const mapContainer = document.getElementById('google-map-container');
-    const mapIframe = document.getElementById('google-map-iframe');
-    const btnConsentMap = document.getElementById('consent-map-btn');
+  const cookieBanner = document.getElementById("cookie-banner");
+  const btnAccept = document.getElementById("cookie-accept");
+  const btnReject = document.getElementById("cookie-reject");
+  const mapContainer = document.getElementById("google-map-container");
+  const mapIframe = document.getElementById("google-map-iframe");
+  const btnConsentMap = document.getElementById("consent-map-btn");
 
-    const loadGoogleMap = () => {
-        if (mapContainer && mapIframe) {
-            const dataSrc = mapIframe.getAttribute('data-src');
-            if (dataSrc) {
-                mapIframe.setAttribute('src', dataSrc);
-                mapIframe.removeAttribute('data-src'); // clean up
-                mapContainer.classList.add('loaded'); // Hides placeholder via CSS
-            }
-        }
+  const loadGoogleMap = () => {
+    if (mapContainer && mapIframe) {
+      const dataSrc = mapIframe.getAttribute("data-src");
+      if (dataSrc) {
+        mapIframe.setAttribute("src", dataSrc);
+        mapIframe.removeAttribute("data-src"); // clean up
+        mapContainer.classList.add("loaded"); // Hides placeholder via CSS
+      }
+    }
+  };
+
+  // Check Status
+  const consentStatus = localStorage.getItem("cookieConsent");
+
+  if (consentStatus === "true") {
+    loadGoogleMap();
+  } else if (consentStatus === "false") {
+    // Do nothing, map remains placeholder
+  } else {
+    // No choice yet -> Show Banner
+    setTimeout(() => {
+      cookieBanner.classList.add("visible");
+    }, 2000); // Delay for better UX
+  }
+
+  // Handlers
+  if (btnAccept) {
+    btnAccept.addEventListener("click", () => {
+      localStorage.setItem("cookieConsent", "true");
+      cookieBanner.classList.remove("visible");
+      loadGoogleMap();
+    });
+  }
+
+  if (btnReject) {
+    btnReject.addEventListener("click", () => {
+      localStorage.setItem("cookieConsent", "false");
+      cookieBanner.classList.remove("visible");
+    });
+  }
+
+  // Specific Map Button Handler
+  if (btnConsentMap) {
+    btnConsentMap.addEventListener("click", () => {
+      localStorage.setItem("cookieConsent", "true"); // Implicit consent for map functionality
+      loadGoogleMap();
+      if (cookieBanner) cookieBanner.classList.remove("visible");
+    });
+  }
+
+  /* --- Availability Calendar Navigator --- */
+  /* --- Custom Native Calendar Engine --- */
+  const calendarContainer = document.getElementById("customCalendarContainer");
+  const monthLabel = document.getElementById("calendarMonth");
+  const yearLabel = document.getElementById("calendarYear");
+  const calPrevBtn = document.getElementById("prevMonth");
+  const calNextBtn = document.getElementById("nextMonth");
+
+  if (calendarContainer) {
+    let calendarData = []; // Store parsed months
+    let currentIndex = 0;
+    const objectId = "21317";
+    const months = [
+      "Leden",
+      "Únor",
+      "Březen",
+      "Duben",
+      "Květen",
+      "Červen",
+      "Červenec",
+      "Srpen",
+      "Září",
+      "Říjen",
+      "Listopad",
+      "Prosinec",
+    ];
+
+    const CACHE_KEY = `echalupyCal_${objectId}`;
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hour – availability doesn't change by the second
+    const PROXY_TIMEOUT = 5000; // ms – a hung proxy fails fast instead of blocking
+
+    // Turn the e-chalupy HTML into our internal calendar structure
+    const parseCalendarHtml = (htmlString) => {
+      if (!htmlString || !htmlString.includes("table"))
+        throw new Error("Invalid content");
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, "text/html");
+      const tables = doc.querySelectorAll("table.month");
+      if (tables.length === 0) throw new Error("No tables");
+
+      return Array.from(tables).map((table) => {
+        const name = table.querySelector(".month-name")?.textContent || "";
+        const parts = name.trim().split(/\s+/);
+        const monthName = parts[0];
+        const year = parts[parts.length - 1];
+
+        const rows = Array.from(table.querySelectorAll("tr")).slice(2);
+        const days = [];
+
+        rows.forEach((row) => {
+          const cells = Array.from(row.querySelectorAll("td"));
+          cells.forEach((cell) => {
+            const className = cell.className;
+            const dayNum = cell.textContent.trim();
+            let status = "empty";
+
+            if (className.includes("day-free")) status = "free";
+            if (className.includes("day-full")) status = "full";
+            if (className.includes("day-full") && className.includes("z"))
+              status = "arrival";
+            if (className.includes("day-full") && className.includes("k"))
+              status = "departure";
+            if (className.includes("day-shdw")) status = "empty";
+
+            days.push({ day: dayNum, status: status });
+          });
+        });
+
+        return { month: monthName, year: year, days: days };
+      });
     };
 
-    // Check Status
-    const consentStatus = localStorage.getItem('cookieConsent');
+    // Fetch one proxy with a hard timeout; resolves to parsed data or throws
+    const fetchViaProxy = async (url, index) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), PROXY_TIMEOUT);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Proxy error");
 
-    if (consentStatus === 'true') {
-        loadGoogleMap();
-    } else if (consentStatus === 'false') {
-        // Do nothing, map remains placeholder
-    } else {
-        // No choice yet -> Show Banner
-        setTimeout(() => {
-            cookieBanner.classList.add('visible');
-        }, 2000); // Delay for better UX
-    }
+        let htmlString = "";
+        if (url.includes("allorigins")) {
+          const data = await response.json();
+          htmlString = data.contents;
+        } else {
+          htmlString = await response.text();
+        }
 
-    // Handlers
-    if (btnAccept) {
-        btnAccept.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'true');
-            cookieBanner.classList.remove('visible');
-            loadGoogleMap();
-        });
-    }
+        const parsed = parseCalendarHtml(htmlString);
+        console.log(`Proxy ${index + 1} succeeded`);
+        return parsed;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
 
-    if (btnReject) {
-        btnReject.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'false');
-            cookieBanner.classList.remove('visible');
-        });
-    }
+    const fetchCalendarData = async () => {
+      // Hourly cache bucket instead of Date.now() so browser/CDN/proxies can actually cache
+      const hourBucket = Math.floor(Date.now() / CACHE_TTL);
+      const targetUrl = `https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&legenda=ne&jednotky=ne&_t=${hourBucket}`;
 
-    // Specific Map Button Handler
-    if (btnConsentMap) {
-        btnConsentMap.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'true'); // Implicit consent for map functionality
-            loadGoogleMap();
-            if (cookieBanner) cookieBanner.classList.remove('visible');
-        });
-    }
+      // Primary, reliable source: a static snapshot committed to our own repo and
+      // refreshed by a GitHub Action (see .github/workflows/refresh-calendar.yml).
+      // Same-origin static file -> no CORS, no third parties, instant on GitHub Pages.
+      const localData = `assets/data/kalendar.html?v=${hourBucket}`;
 
-    /* --- Availability Calendar Navigator --- */
-    /* --- Custom Native Calendar Engine --- */
-    const calendarContainer = document.getElementById('customCalendarContainer');
-    const monthLabel = document.getElementById('calendarMonth');
-    const yearLabel = document.getElementById('calendarYear');
-    const calPrevBtn = document.getElementById('prevMonth');
-    const calNextBtn = document.getElementById('nextMonth');
+      // Secondary: public CORS proxies, only used if the static snapshot is missing
+      // (e.g. opening the site via file://, or the Action hasn't run yet).
+      const proxies = [
+        `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+      ];
 
-    if (calendarContainer) {
-        let calendarData = []; // Store parsed months
-        let currentIndex = 0;
-        const objectId = '21317';
-        const months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
+      const storeAndRender = (parsed) => {
+        calendarData = parsed;
+        renderCalendar(currentIndex);
+        try {
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ ts: Date.now(), data: parsed }),
+          );
+        } catch (e) {
+          console.warn("Calendar cache write failed:", e.message);
+        }
+      };
 
-        const fetchCalendarData = async () => {
-            const targetUrl = `https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&legenda=ne&jednotky=ne&_t=${Date.now()}`;
-            
-            // List of proxies to try
-            const proxies = [
-                `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
-            ];
+      // 1. Instant paint from a fresh local cache (repeat visits load with zero network wait)
+      let paintedFromCache = false;
+      try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        if (
+          cached &&
+          Array.isArray(cached.data) &&
+          cached.data.length &&
+          Date.now() - cached.ts < CACHE_TTL
+        ) {
+          calendarData = cached.data;
+          renderCalendar(currentIndex);
+          paintedFromCache = true;
+        }
+      } catch (e) {
+        console.warn("Calendar cache read failed:", e.message);
+      }
 
-            const tryFetch = async (url, index) => {
-                try {
-                    console.log(`Trying proxy ${index + 1}...`);
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error('Proxy error');
-                    
-                    let htmlString = '';
-                    if (url.includes('allorigins')) {
-                        const data = await response.json();
-                        htmlString = data.contents;
-                    } else {
-                        htmlString = await response.text();
-                    }
+      // 2. Try our own static snapshot first – reliable, same-origin, no CORS
+      try {
+        const parsed = await fetchViaProxy(localData, 0);
+        storeAndRender(parsed);
+        return;
+      } catch (e) {
+        console.warn(
+          "Static calendar snapshot unavailable, trying public proxies:",
+          e.message,
+        );
+      }
 
-                    if (!htmlString || !htmlString.includes('table')) throw new Error('Invalid content');
+      // 3. Fallback: race the public proxies in parallel – first valid response wins
+      try {
+        const parsed = await Promise.any(
+          proxies.map((url, i) => fetchViaProxy(url, i + 1)),
+        );
+        storeAndRender(parsed);
+      } catch (e) {
+        console.error("All data sources failed.", e);
+        // Only fall back to the iframe if we have nothing on screen yet
+        if (!paintedFromCache) showIframeFallback();
+      }
+    };
 
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlString, 'text/html');
-                    const tables = doc.querySelectorAll('table.month');
-                    
-                    if (tables.length === 0) throw new Error('No tables');
-
-                    calendarData = Array.from(tables).map(table => {
-                        const name = table.querySelector('.month-name')?.textContent || '';
-                        const parts = name.trim().split(/\s+/);
-                        const monthName = parts[0];
-                        const year = parts[parts.length - 1];
-
-                        const rows = Array.from(table.querySelectorAll('tr')).slice(2);
-                        const days = [];
-
-                        rows.forEach(row => {
-                            const cells = Array.from(row.querySelectorAll('td'));
-                            cells.forEach(cell => {
-                                const className = cell.className;
-                                const dayNum = cell.textContent.trim();
-                                let status = 'empty';
-
-                                if (className.includes('day-free')) status = 'free';
-                                if (className.includes('day-full')) status = 'full';
-                                if (className.includes('day-full') && className.includes('z')) status = 'arrival';
-                                if (className.includes('day-full') && className.includes('k')) status = 'departure';
-                                if (className.includes('day-shdw')) status = 'empty';
-
-                                days.push({ day: dayNum, status: status });
-                            });
-                        });
-
-                        return { month: monthName, year: year, days: days };
-                    });
-
-                    renderCalendar(currentIndex);
-                    return true;
-                } catch (e) {
-                    console.warn(`Proxy ${index + 1} failed:`, e.message);
-                    return false;
-                }
-            };
-
-            // Sequential try
-            let success = false;
-            for (let i = 0; i < proxies.length; i++) {
-                success = await tryFetch(proxies[i], i);
-                if (success) break;
-            }
-
-            if (!success) {
-                console.error("All proxies failed. Falling back to official iframe.");
-                showIframeFallback();
-            }
-        };
-
-        const showIframeFallback = () => {
-            // Load resize.js for the iframe
-            if (!document.querySelector('script[src*="resize.js"]')) {
-                const script = document.createElement('script');
-                script.src = "https://obsazenost.e-chalupy.cz/resize.js";
-                document.head.appendChild(script);
-            }
-
-            // If all custom attempts fail, use the official iframe but style it nicely
-            const widget = document.querySelector('.calendar-widget');
-            if (widget) {
-                widget.innerHTML = `
+    const showIframeFallback = () => {
+      // NOTE: We deliberately do NOT load e-chalupy's resize.js here.
+      // resize.js auto-grows the iframe to fit its full content, which with
+      // pocetMesicu=12 blows the calendar up to a page-tall stack of months.
+      // Instead we request only 3 months and keep a fixed, scrollable height.
+      const widget = document.querySelector(".calendar-widget");
+      if (widget) {
+        widget.innerHTML = `
                     <div class="calendar-iframe-fallback">
-                        <iframe src="https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=12&velikost=3&legenda=ano&vybraneMesice=&naStred=ano&ctvrtleti=ne&stin=ne&jazyk=cz&jednotky=ano&idJednotky=0&vypisJednotky=ne&souhrnny=&pozadi=f5efe6&kalendarText=3b2e24&kalendarPozadi=ffffff&ramecek=9e7a2e&mesicText=3b2e24&mesicPozadi=ebe3d6&dnyText=3b2e24&dnyPozadia=ffffff&obsazenoText=ffffff&obsazenoPozadi=7e1624&volnoText=3b2e24&volnoPozadi=ffffff&castecneText=3b2e24&castecnePozadi=ebe3d6&neaktivniDnyText=bbbbbb&neaktivniDnyPozadi=ffffff&legendaText=3b2e24&fontFamily=Verdana&extCss=" 
-                        height="460px" width="100%" frameborder="0" id="echalupy-kalendar"></iframe>
+                        <iframe src="https://obsazenost.e-chalupy.cz/kalendar.php?id=${objectId}&pocetMesicu=3&velikost=3&legenda=ano&vybraneMesice=&naStred=ano&ctvrtleti=ne&stin=ne&jazyk=cz&jednotky=ne&idJednotky=0&vypisJednotky=ne&souhrnny=&pozadi=f5efe6&kalendarText=3b2e24&kalendarPozadi=ffffff&ramecek=9e7a2e&mesicText=3b2e24&mesicPozadi=ebe3d6&dnyText=3b2e24&dnyPozadia=ffffff&obsazenoText=ffffff&obsazenoPozadi=7e1624&volnoText=3b2e24&volnoPozadi=ffffff&castecneText=3b2e24&castecnePozadi=ebe3d6&neaktivniDnyText=bbbbbb&neaktivniDnyPozadi=ffffff&legendaText=3b2e24&fontFamily=Verdana&extCss="
+                        height="460" width="100%" scrolling="auto" frameborder="0" id="echalupy-kalendar" style="max-height: 460px; border: 0;"></iframe>
                     </div>
                     <div class="calendar-source mt-4">
                         <span>Zdroj dat:</span>
-                        <a href="https://www.e-chalupy.cz/objekt/${objectId}/" target="_blank" rel="noopener">e-chalupy.cz</a>
+                        <a href="https://www.e-chalupy.cz/ubytovani-drnholec-apartman-nad-sklipkem-o21317" target="_blank" rel="noopener">e-chalupy.cz</a>
                     </div>
                 `;
-            }
-        };
+      }
+    };
 
-        const renderCalendar = (index) => {
-            if (!calendarData[index]) return;
-            const data = calendarData[index];
-            const checkinVal = document.getElementById('checkin')?.value;
-            const checkoutVal = document.getElementById('checkout')?.value;
+    const renderCalendar = (index) => {
+      if (!calendarData[index]) return;
+      const data = calendarData[index];
+      const checkinVal = document.getElementById("checkin")?.value;
+      const checkoutVal = document.getElementById("checkout")?.value;
 
-            // 1. Update Labels
-            if (monthLabel) monthLabel.textContent = data.month;
-            if (yearLabel) yearLabel.textContent = data.year;
+      // 1. Update Labels
+      if (monthLabel) monthLabel.textContent = data.month;
+      if (yearLabel) yearLabel.textContent = data.year;
 
-            // 2. Build Table
-            let html = `
+      // 2. Build Table
+      let html = `
                 <table class="calendar-table">
                     <thead>
                         <tr>
@@ -534,166 +641,186 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tbody>
             `;
 
-            for (let i = 0; i < data.days.length; i += 7) {
-                html += '<tr>';
-                for (let j = 0; j < 7; j++) {
-                    const dayObj = data.days[i + j];
-                    if (!dayObj) continue; // Safety check
+      for (let i = 0; i < data.days.length; i += 7) {
+        html += "<tr>";
+        for (let j = 0; j < 7; j++) {
+          const dayObj = data.days[i + j];
+          if (!dayObj) continue; // Safety check
 
-                    const cellClass = `cal-${dayObj.status}`;
-                    // Only Free and Departure days are selectable for check-in
-                    const isSelectable = ['free', 'departure'].includes(dayObj.status) && dayObj.day;
+          const cellClass = `cal-${dayObj.status}`;
+          // Only Free and Departure days are selectable for check-in
+          const isSelectable =
+            ["free", "departure"].includes(dayObj.status) && dayObj.day;
 
-                    // Add click handler for selectable days
-                    let clickAttr = '';
-                    let extraClass = '';
-                    if (isSelectable) {
-                        const monthNum = months.indexOf(data.month) + 1;
-                        const formattedMonth = monthNum < 10 ? `0${monthNum}` : monthNum;
-                        const formattedDay = parseInt(dayObj.day) < 10 ? `0${dayObj.day}` : dayObj.day;
-                        const isoDate = `${data.year}-${formattedMonth}-${formattedDay}`;
-                        clickAttr = `onclick="selectCalendarDate('${isoDate}')" style="cursor: pointer"`;
+          // Add click handler for selectable days
+          let clickAttr = "";
+          let extraClass = "";
+          if (isSelectable) {
+            const monthNum = months.indexOf(data.month) + 1;
+            const formattedMonth = monthNum < 10 ? `0${monthNum}` : monthNum;
+            const formattedDay =
+              parseInt(dayObj.day) < 10 ? `0${dayObj.day}` : dayObj.day;
+            const isoDate = `${data.year}-${formattedMonth}-${formattedDay}`;
+            clickAttr = `onclick="selectCalendarDate('${isoDate}')" style="cursor: pointer"`;
 
-                        // Highlight selection
-                        if (isoDate === checkinVal) extraClass = ' cal-checkin';
-                        else if (isoDate === checkoutVal) extraClass = ' cal-checkout';
-                        else if (checkinVal && checkoutVal && isoDate > checkinVal && isoDate < checkoutVal) extraClass = ' cal-range';
-                    }
+            // Highlight selection
+            if (isoDate === checkinVal) extraClass = " cal-checkin";
+            else if (isoDate === checkoutVal) extraClass = " cal-checkout";
+            else if (
+              checkinVal &&
+              checkoutVal &&
+              isoDate > checkinVal &&
+              isoDate < checkoutVal
+            )
+              extraClass = " cal-range";
+          }
 
-                    html += `<td class="${cellClass}${extraClass}" ${clickAttr} aria-label="${dayObj.day}. ${data.month} ${data.year}">${dayObj.day}</td>`;
-                }
-                html += '</tr>';
-            }
+          html += `<td class="${cellClass}${extraClass}" ${clickAttr} aria-label="${dayObj.day}. ${data.month} ${data.year}">${dayObj.day}</td>`;
+        }
+        html += "</tr>";
+      }
 
-            html += '</tbody></table>';
-            calendarContainer.innerHTML = html;
+      html += "</tbody></table>";
+      calendarContainer.innerHTML = html;
 
-            // 3. Update Nav Buttons
-            if (calPrevBtn) {
-                calPrevBtn.style.opacity = index === 0 ? '0.2' : '1';
-                calPrevBtn.style.pointerEvents = index === 0 ? 'none' : 'auto';
-            }
-            if (calNextBtn) {
-                const isLimit = index >= 6; // User wants 6 months limit
-                calNextBtn.style.opacity = isLimit ? '0.2' : '1';
-                calNextBtn.style.pointerEvents = isLimit ? 'none' : 'auto';
-            }
-        };
+      // 3. Update Nav Buttons
+      if (calPrevBtn) {
+        calPrevBtn.style.opacity = index === 0 ? "0.2" : "1";
+        calPrevBtn.style.pointerEvents = index === 0 ? "none" : "auto";
+      }
+      if (calNextBtn) {
+        const isLimit = index >= 6; // User wants 6 months limit
+        calNextBtn.style.opacity = isLimit ? "0.2" : "1";
+        calNextBtn.style.pointerEvents = isLimit ? "none" : "auto";
+      }
+    };
 
-        // Global helper for the onclick attribute
-        window.selectCalendarDate = (dateString) => {
-            const checkinInput = document.getElementById('checkin');
-            const checkoutInput = document.getElementById('checkout');
-            const contactSection = document.getElementById('contact');
+    // Global helper for the onclick attribute
+    window.selectCalendarDate = (dateString) => {
+      const checkinInput = document.getElementById("checkin");
+      const checkoutInput = document.getElementById("checkout");
+      const contactSection = document.getElementById("contact");
 
-            if (!checkinInput || !checkoutInput) return;
+      if (!checkinInput || !checkoutInput) return;
 
-            // Logic: 
-            // 1. If both empty OR both filled -> set check-in, clear check-out
-            // 2. If check-in filled, checkout empty -> if new date > check-in, set checkout. Else set check-in.
-            
-            const newDate = new Date(dateString);
-            const checkinDate = checkinInput.value ? new Date(checkinInput.value) : null;
-            const checkoutDate = checkoutInput.value ? new Date(checkoutInput.value) : null;
+      // Logic:
+      // 1. If both empty OR both filled -> set check-in, clear check-out
+      // 2. If check-in filled, checkout empty -> if new date > check-in, set checkout. Else set check-in.
 
-            if ((!checkinInput.value && !checkoutInput.value) || (checkinInput.value && checkoutInput.value)) {
-                // Start new selection
-                checkinInput.value = dateString;
-                checkoutInput.value = '';
-                highlightInput(checkinInput);
-            } else if (checkinInput.value && !checkoutInput.value) {
-                if (newDate > checkinDate) {
-                    // Set checkout
-                    checkoutInput.value = dateString;
-                    highlightInput(checkoutInput);
-                    
-                    // After selection, scroll to contact
-                    if (contactSection) {
-                        setTimeout(() => {
-                           contactSection.scrollIntoView({ behavior: 'smooth' });
-                        }, 500);
-                    }
-                } else {
-                    // New date is earlier, make it check-in instead
-                    checkinInput.value = dateString;
-                    highlightInput(checkinInput);
-                }
-            }
+      const newDate = new Date(dateString);
+      const checkinDate = checkinInput.value
+        ? new Date(checkinInput.value)
+        : null;
+      const checkoutDate = checkoutInput.value
+        ? new Date(checkoutInput.value)
+        : null;
 
-            // Refresh view to show highlights
-            renderCalendar(currentIndex);
-        };
+      if (
+        (!checkinInput.value && !checkoutInput.value) ||
+        (checkinInput.value && checkoutInput.value)
+      ) {
+        // Start new selection
+        checkinInput.value = dateString;
+        checkoutInput.value = "";
+        highlightInput(checkinInput);
+      } else if (checkinInput.value && !checkoutInput.value) {
+        if (newDate > checkinDate) {
+          // Set checkout
+          checkoutInput.value = dateString;
+          highlightInput(checkoutInput);
 
-        const highlightInput = (el) => {
-            el.classList.add('date-selected-pulse');
-            el.style.backgroundColor = 'rgba(158, 122, 46, 0.15)';
+          // After selection, scroll to contact
+          if (contactSection) {
             setTimeout(() => {
-                el.style.backgroundColor = 'transparent';
-                el.classList.remove('date-selected-pulse');
-            }, 1000);
-        };
-
-
-        if (calPrevBtn) {
-            calPrevBtn.onclick = (e) => {
-                e.preventDefault();
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    renderCalendar(currentIndex);
-                }
-            };
+              contactSection.scrollIntoView({ behavior: "smooth" });
+            }, 500);
+          }
+        } else {
+          // New date is earlier, make it check-in instead
+          checkinInput.value = dateString;
+          highlightInput(checkinInput);
         }
+      }
 
-        if (calNextBtn) {
-            calNextBtn.onclick = (e) => {
-                e.preventDefault();
-                if (currentIndex < 6) {
-                    currentIndex++;
-                    renderCalendar(currentIndex);
-                }
-            };
+      // Refresh view to show highlights
+      renderCalendar(currentIndex);
+    };
+
+    const highlightInput = (el) => {
+      el.classList.add("date-selected-pulse");
+      el.style.backgroundColor = "rgba(158, 122, 46, 0.15)";
+      setTimeout(() => {
+        el.style.backgroundColor = "transparent";
+        el.classList.remove("date-selected-pulse");
+      }, 1000);
+    };
+
+    if (calPrevBtn) {
+      calPrevBtn.onclick = (e) => {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          currentIndex--;
+          renderCalendar(currentIndex);
         }
-
-        fetchCalendarData();
+      };
     }
 
-    /* --- Initializers --- */
-    window.addEventListener('scroll', updateBottleAndNav, { passive: true });
-    updateBottleAndNav();
-
-    /* --- Custom Cursor Logic --- */
-    const cursor = document.createElement('div');
-    cursor.classList.add('custom-cursor');
-    document.body.appendChild(cursor);
-
-    // Only activate on non-touch devices
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        // Smooth follow loop
-        const animateCursor = () => {
-            // Linear interpolation for "magnetic" delay
-            cursorX += (mouseX - cursorX) * 0.15;
-            cursorY += (mouseY - cursorY) * 0.15;
-
-            cursor.style.left = `${cursorX}px`;
-            cursor.style.top = `${cursorY}px`;
-
-            requestAnimationFrame(animateCursor);
-        };
-        animateCursor();
-
-        // Hover effect for interactive elements
-        const hoverElements = document.querySelectorAll('a, button, .card, input, textarea, label, .gallery-nav, .lightbox-nav');
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
-        });
+    if (calNextBtn) {
+      calNextBtn.onclick = (e) => {
+        e.preventDefault();
+        if (currentIndex < 6) {
+          currentIndex++;
+          renderCalendar(currentIndex);
+        }
+      };
     }
+
+    fetchCalendarData();
+  }
+
+  /* --- Initializers --- */
+  window.addEventListener("scroll", updateBottleAndNav, { passive: true });
+  updateBottleAndNav();
+
+  /* --- Custom Cursor Logic --- */
+  const cursor = document.createElement("div");
+  cursor.classList.add("custom-cursor");
+  document.body.appendChild(cursor);
+
+  // Only activate on non-touch devices
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    let mouseX = 0,
+      mouseY = 0;
+    let cursorX = 0,
+      cursorY = 0;
+
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Smooth follow loop
+    const animateCursor = () => {
+      // Linear interpolation for "magnetic" delay
+      cursorX += (mouseX - cursorX) * 0.15;
+      cursorY += (mouseY - cursorY) * 0.15;
+
+      cursor.style.left = `${cursorX}px`;
+      cursor.style.top = `${cursorY}px`;
+
+      requestAnimationFrame(animateCursor);
+    };
+    animateCursor();
+
+    // Hover effect for interactive elements
+    const hoverElements = document.querySelectorAll(
+      "a, button, .card, input, textarea, label, .gallery-nav, .lightbox-nav",
+    );
+    hoverElements.forEach((el) => {
+      el.addEventListener("mouseenter", () => cursor.classList.add("hovered"));
+      el.addEventListener("mouseleave", () =>
+        cursor.classList.remove("hovered"),
+      );
+    });
+  }
 });
